@@ -588,6 +588,24 @@ const gemNames = [
 
 function init() {
     currentTab = 0;
+
+    // handle dragging files in
+    window.addEventListener("drop", (e) => { //process drag&drop behavior
+        if ([...e.dataTransfer.items].some((item) => item.kind === "file")) {
+            e.preventDefault();
+            let file = e.dataTransfer.files[0];
+            handleUpload(file);
+        }
+    });
+    document.addEventListener("dragover", (e) => { //UI to reflect drag&drop ability
+        const fileItems = [...e.dataTransfer.items].filter(
+            (item) => item.kind === "file",
+        );
+        if (fileItems.length > 0) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "copy";
+        }
+    });
 }
 
 init();
@@ -605,9 +623,11 @@ function changeTab (index) {
 }
 
 
-function handleUpload() {
-    const elem = document.getElementById("save-upload");
-    file = elem.files[0];
+function handleUpload(file) {
+    if(!file) {
+        const elem = document.getElementById("save-upload");
+        file = elem.files[0];
+    } 
     if(!file) return;
     if(file.name != "savedata.ini") {
         document.getElementById("upload-error").classList.add("active");
@@ -673,7 +693,13 @@ function processRabbits() {
             FastestWinTime: NEVER,
             FastestWinDiff: -1,
             FastestWinType: -1,
-            TotalWins: 0
+            FastestOfflineTime: NEVER,
+            FastestOfflineDiff: -1,
+            FastestOnlineTime: NEVER,
+            FastestOnlineDiff: -1,
+            TotalWins: 0,
+            OfflineWins: 0,
+            OnlineWins: 0
         });
     }
     for(let i in vals["AllyWin"]) {
@@ -683,6 +709,8 @@ function processRabbits() {
                 let type = i[i.length-3];
                 rabbitStats[j][types[type] + diffs[diff] + "Count"] = vals["AllyWin"][i];
                 rabbitStats[j]["TotalWins"] += vals["AllyWin"][i];
+                if(type == 0) rabbitStats[j]["OfflineWins"] += vals["AllyWin"][i];
+                else rabbitStats[j]["OnlineWins"] += vals["AllyWin"][i];
             }
         }
     }
@@ -692,13 +720,25 @@ function processRabbits() {
                 let diff = i[i.length-1];
                 let type = i[i.length-3];
                 rabbitStats[j][types[type] + diffs[diff] + "Fastest"] = vals["AllyWinTime"][i];
-                if(vals["AllyWinTime"][i] > 0
-                        && (rabbitStats[j].FastestWinTime == NEVER
-                        || vals["AllyWinTime"][i] < rabbitStats[j].FastestWinTime)) {
-                    rabbitStats[j].FastestWinTime = vals["AllyWinTime"][i];
-                    rabbitStats[j].FastestWinDiff = diff;
-                    rabbitStats[j].FastestWinType = type;
-
+                if(vals["AllyWinTime"][i] > 0) {
+                    if(rabbitStats[j].FastestWinTime == NEVER
+                            || vals["AllyWinTime"][i] < rabbitStats[j].FastestWinTime) {
+                        rabbitStats[j].FastestWinTime = vals["AllyWinTime"][i];
+                        rabbitStats[j].FastestWinDiff = diff;
+                        rabbitStats[j].FastestWinType = type;
+                    }
+                    
+                    if(type == 0 && (rabbitStats[j].FastestOfflineTime == NEVER
+                            || vals["AllyWinTime"][i] < rabbitStats[j].FastestOfflineTime)) {
+                        rabbitStats[j].FastestOfflineTime = vals["AllyWinTime"][i];
+                        rabbitStats[j].FastestOfflineDiff = diff;
+                    }
+                    
+                    if(type == 1 && (rabbitStats[j].FastestOfflineTime == NEVER
+                            || vals["AllyWinTime"][i] < rabbitStats[j].FastestOnlineTime)) {
+                        rabbitStats[j].FastestOnlineTime = vals["AllyWinTime"][i];
+                        rabbitStats[j].FastestOnlineDiff = diff;
+                    }
                 }
             }
         }
@@ -899,21 +939,16 @@ function generateSummary() {
         ]
     ];
 
-    // an array of classes that have the most wins, in 3 tiers
+    // an array of classes that have the most wins: total, offline, online
     let mostWins = [];
     rabbitStats.sort((a, b) => {return b.TotalWins - a.TotalWins});
-    let ind = 0;
-    for(let i in rabbitStats) {
-        if(!mostWins[ind])
-            mostWins[ind] = [rabbitStats[i]];
-        else if(rabbitStats[i]["TotalWins"] >= mostWins[ind][0]["TotalWins"])
-            mostWins[ind].push(rabbitStats[i]);
-        else {
-            ind++;
-            if(ind > 2) break;
-            mostWins[ind] = [rabbitStats[i]];
-        }
-    }
+    mostWins[0] = rabbitStats[0];
+    
+    rabbitStats.sort((a, b) => {return b.OfflineWins - a.OfflineWins});
+    mostWins[1] = rabbitStats[0];
+    
+    rabbitStats.sort((a, b) => {return b.OnlineWins - a.OnlineWins});
+    mostWins[2] = rabbitStats[0];
 
     // an array of classes that have the most wins on each diff
     let mostWinsByDiff = [];
@@ -934,23 +969,17 @@ function generateSummary() {
         }
     }
 
-    //an array of classes that have the fastest wins, in 3 tiers
+    //an array of classes that have the fastest wins: offline, online
     let fastestWins = [];
     rabbitStats.sort((a, b) => {
-        return a.FastestWinTime - b.FastestWinTime
+        return a.FastestOfflineTime - b.FastestOfflineTime
     });
-    ind = 0;
-    for(let i in rabbitStats) {
-        if(!fastestWins[ind])
-            fastestWins[ind] = [rabbitStats[i]];
-        else if(rabbitStats[i]["FastestWin"] >= fastestWins[ind][0]["FastestWin"])
-            fastestWins[ind].push(rabbitStats[i]);
-        else {
-            ind++;
-            if(ind > 2) break;
-            fastestWins[ind] = [rabbitStats[i]];
-        }
-    }
+    fastestWins[0] = rabbitStats[0];
+
+    rabbitStats.sort((a, b) => {
+        return a.FastestOnlineTime - b.FastestOnlineTime
+    });
+    fastestWins[1] = rabbitStats[0];
 
     // an array of classes that have the fastest wins on each diff (in case of tie)
     let fastestWinsByDiff = [];
@@ -1014,12 +1043,12 @@ function generateSummary() {
     
     //todo: this is incomplete, doesn't sort by solo/online
     //tbh, I'd rather just track fastest/winnest 1, not 3
-    // document.getElementById("fastest0-1").innerText = fastestWins[0][0].class;
-    // document.getElementById("fastest0-2").innerText = fastestWins[0][0].class;
+    document.getElementById("fastest0-1").innerText = fastestWins[0].class + ': ' + msToString(fastestWins[0].FastestOfflineTime);
+    document.getElementById("fastest0-2").innerText = fastestWins[1].class + ': ' + msToString(fastestWins[1].FastestOnlineTime);
 
-    // document.getElementById("winnest0-0").innerText = mostWins[0][0].class;
-    // document.getElementById("winnest0-1").innerText = mostWins[0][0].class;
-    // document.getElementById("winnest0-2").innerText = mostWins[0][0].class;
+    document.getElementById("winnest0-0").innerText = mostWins[0].class + ': ' + mostWins[0].TotalWins;
+    document.getElementById("winnest0-1").innerText = mostWins[1].class + ': ' + mostWins[1].OfflineWins;
+    document.getElementById("winnest0-2").innerText = mostWins[2].class + ': ' + mostWins[2].OnlineWins;
 
     
 
@@ -1143,4 +1172,12 @@ function arraySum(arr) {
     for(let i in arr)
         ret += arr[i];
     return ret;
+}
+
+function msToString(time) {
+    let mins = Math.floor(time / 60000);
+    let seconds = Math.floor((time % 60000) / 1000);
+    seconds = seconds > 10 ? seconds : '0' + seconds;
+    let ms = time % 1000;
+    return `${mins}:${seconds}`;
 }
