@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A web-based save file viewer for Rabbit & Steel">
+    <title>RnS Save Viewer</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+
+    <!-- - - - LIBRARIES  - - - - - - -->
+
+    <!-- - - - MAIN STYLESHEETS - - - -->
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
+    <!-- - - - MAIN SCRIPTS - - - - - -->
+    <script defer type="text/javascript" src="main.js"></script>
+</head>
+<body>
+    <label>Upload your save here:</label>
+    <input type="file" id="save-upload" onchange="handleUpload()"></input><br>
+    <div id="upload-error" class="error-message">Please upload a valid save file (<code>savedata.ini</code>)</div>
+    <div>You can find this file at <code>C:\Users\USERNAME\AppData\Local\RabbitSteel\SaveFile\savedata.ini</code></div>
+
+    <div id="tabs">
+        <button onclick="changeTab(0)">Summary</button>
+        <button onclick="changeTab(1)">Rabbits</button>
+        <button onclick="changeTab(2)">Difficulties</button>
+        <button onclick="changeTab(3)">Items & Upgrades</button>
+        <button onclick="changeTab(4)">Raw View</button>
+    </div>
+    <div id="tab-content">
+        <div class="tab active" id="tab-0">
+            <div id="summary-content">
+                <div class="title">Summary</div>
+                <div>
+                    <label>Total Playtime: </label>
+                    <span id="playtime"></span>
+                </div>
+                <div class="grid-type">
+                    <div></div>
+                    <div><u>Total</u></div>
+                    <div><u>Solo</u></div>
+                    <div><u>Online</u></div>
+                    <div>Total Attempts</div>
+                    <div id="attempts-0">-</div>
+                    <div id="attempts-1">-</div>
+                    <div id="attempts-2">-</div>
+                    <div>Total Wins</div>
+                    <div id="wins-0">-</div>
+                    <div id="wins-1">-</div>
+                    <div id="wins-2">-</div>
+                    <div class="divider">Win Percentage</div>
+                    <div id="winloss-0">-</div>
+                    <div id="winloss-1">-</div>
+                    <div id="winloss-2">-</div>
+
+                    <div>Shop Visits</div>
+                    <div id="shops-0">-</div>
+                    <div id="shops-1">-</div>
+                    <div id="shops-2">-</div>
+                    <div class="divider">Avg. Shop Visits per Attempt</div>
+                    <div id="shopratio-0">-</div>
+                    <div id="shopratio-1">-</div>
+                    <div id="shopratio-2">-</div>
+
+                    <div class="divider">Fastest Wins</div>
+                    <div id="fastest0-0">-</div>
+                    <div id="fastest0-1">-</div>
+                    <div>-</div>
+
+                    <div>Most Victorious Rabbits</div>
+                    <div id="winnest0-0">-</div>
+                    <div id="winnest0-1">-</div>
+                    <div id="winnest0-2">-</div>
+                </div>
+                <br>
+                <div class="grid-diff">
+                    <div></div>
+                    <div><u>Cute</u></div>
+                    <div><u>Normal</u></div>
+                    <div><u>Hard</u></div>
+                    <div><u>Lunar</u></div>
+                    <div>Kingdom Attempts</div>
+                    <div id="kingdomattempts-0">-</div>
+                    <div id="kingdomattempts-1">-</div>
+                    <div id="kingdomattempts-2">-</div>
+                    <div id="kingdomattempts-3">-</div>
+                    <div>Kingdom Wins</div>
+                    <div id="kingdomwins-0">-</div>
+                    <div id="kingdomwins-1">-</div>
+                    <div id="kingdomwins-2">-</div>
+                    <div id="kingdomwins-3">-</div>
+                    <div class="divider">Kingdom Win Percentage</div>
+                    <div id="kingdomratio-0">-</div>
+                    <div id="kingdomratio-1">-</div>
+                    <div id="kingdomratio-2">-</div>
+                    <div id="kingdomratio-3">-</div>
+                    <div>Extra Attempts</div>
+                    <div id="extraattempts-0">-</div>
+                    <div id="extraattempts-1">-</div>
+                    <div id="extraattempts-2">-</div>
+                    <div id="extraattempts-3">-</div>
+                    <div>Extra Wins</div>
+                    <div id="extrawins-0">-</div>
+                    <div id="extrawins-1">-</div>
+                    <div id="extrawins-2">-</div>
+                    <div id="extrawins-3">-</div>
+                    <div class="divider">Extra Win Percentage</div>
+                    <div id="extraratio-0">-</div>
+                    <div id="extraratio-1">-</div>
+                    <div id="extraratio-2">-</div>
+                    <div id="extraratio-3">-</div>
+                    <div>True Random Wins</div>
+                    <div id="truerand-0">-</div>
+                    <div id="truerand-1">-</div>
+                    <div id="truerand-2">-</div>
+                    <div id="truerand-3">-</div>
+                    <div>Chaotic Random Wins</div>
+                    <div id="chaosrand-0">-</div>
+                    <div id="chaosrand-1">-</div>
+                    <div id="chaosrand-2">-</div>
+                    <div id="chaosrand-3">-</div>
+                </div>
+                <div><small><i>True Random and Chaotic Random runs will cause some of these values to misbehave</i></small></div>
+                <br>
+                <div class="title">Item Progress</div>
+                <div style="display:grid; grid-template-columns: auto auto;">
+                    <div>Items Seen: </div>
+                    <div id="items-0">0/0</div>
+                    <div>Items Picked Up: </div>
+                    <div id="items-1">0/0</div>
+                    <div>Items Cleared Cute With: </div>
+                    <div id="items-2">0/0</div>
+                    <div>Items Cleared Normal With: </div>
+                    <div id="items-3">0/0</div>
+                    <div>Items Cleared Hard With: </div>
+                    <div id="items-4">0/0</div>
+                    <div>Items Cleared Lunar With: </div>
+                    <div id="items-5">0/0</div>
+                </div>
+                <br>
+                <div class="title">Gem Progress</div>
+                <div style="display:grid; grid-template-columns: auto auto;">
+                    <div>Gems Seen: </div>
+                    <div id="gems-0">0/0</div>
+                    <div>Gems Purchased: </div>
+                    <div id="gems-1">0/0</div>
+                    <div>Gems Cleared Cute With: </div>
+                    <div id="gems-2">0/0</div>
+                    <div>Gems Cleared Normal With: </div>
+                    <div id="gems-3">0/0</div>
+                    <div>Gems Cleared Hard With: </div>
+                    <div id="gems-4">0/0</div>
+                    <div>Gems Cleared Lunar With: </div>
+                    <div id="gems-5">0/0</div>
+                </div>
+            </div>
+        </div>
+        <div class="tab" id="tab-1">
+            <div id="rabbits-content"></div>
+        </div>
+        <div class="tab" id="tab-2">
+            <div id="diffs-content"></div>
+        </div>
+        <div class="tab" id="tab-3">
+            <div id="items-content"></div>
+        </div>
+        <div class="tab" id="tab-4">
+            <div id="raw-content"></div>
+        </div>
+    </div>
+</body>
