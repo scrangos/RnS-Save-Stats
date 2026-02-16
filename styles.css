@@ -71,6 +71,12 @@ body {
     display: grid;
     grid-template-columns: auto auto auto auto auto;
 }
+
+.grid-6 {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto auto;
+}
+
 .divider {
     margin-bottom: 0.5rem;
 }

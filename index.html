@@ -28,7 +28,7 @@
         <button onclick="changeTab(0)">Summary</button>
         <button disabled onclick="changeTab(1)">Rabbits</button>
         <button disabled onclick="changeTab(2)">Difficulties</button>
-        <button disabled onclick="changeTab(3)">Items & Upgrades</button>
+        <button onclick="changeTab(3)">Items & Upgrades</button>
         <button onclick="changeTab(4)">Raw View</button>
     </div>
     <div id="tab-content">
@@ -166,7 +166,28 @@
             <div id="diffs-content"></div>
         </div>
         <div class="tab" id="tab-3">
-            <div id="items-content"></div>
+            <div id="items-content">
+                <div class="title">Items</div>
+                <div class="grid-6" id="item-grid">
+                    <div><u>Item</u></div>
+                    <div><u>Seen</u></div>
+                    <div><u>Held</u></div>
+                    <div><u>Cute</u></div>
+                    <div><u>Normal</u></div>
+                    <div><u>Hard</u></div>
+                    <div><u>Lunar</u></div>
+                </div>
+                <div class="title">Gems</div>
+                <div class="grid-6" id="gems-grid">
+                    <div><u>Gem</u></div>
+                    <div><u>Seen</u></div>
+                    <div><u>Bought</u></div>
+                    <div><u>Cute</u></div>
+                    <div><u>Normal</u></div>
+                    <div><u>Hard</u></div>
+                    <div><u>Lunar</u></div>
+                </div>
+            </div>
         </div>
         <div class="tab" id="tab-4">
             <div id="raw-content"></div>

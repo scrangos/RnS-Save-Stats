@@ -1128,7 +1128,49 @@ function generateDifficulties() {
 }
 
 function generateItems() {
+    //todo: sort
+    //todo: real names
+    let itemsElem = document.getElementById("item-grid");
+    let itemsChildren = itemsElem.children;
+    for(let i = 7; i < itemsChildren.length; i++)
+        itemsChildren[i].remove();
 
+    for(let i in itemNames) {
+        let labelElem = document.createElement("div");
+        if(vals["ItemDiscovery"][itemNames[i]]) {
+            labelElem.innerText = itemNames[i];
+        }
+        else
+            labelElem.innerText = "Undiscovered Item";
+        itemsElem.appendChild(labelElem);
+        
+        for(let j = 0; j < 6; j++) {
+            let valElem = document.createElement("div");
+            valElem.innerText = (vals["ItemDiscovery"][itemNames[i]] & Math.pow(2, j)) > 0;
+            itemsElem.appendChild(valElem);
+        }
+    }
+    
+    let gemsElem = document.getElementById("gems-grid");
+    let gemschildren = gemsElem.children;
+    for(let i = 7; i < gemschildren.length; i++)
+        gemschildren[i].remove();
+
+    for(let i in itemNames) {
+        let labelElem = document.createElement("div");
+        if(vals["ItemDiscovery"][gemNames[i]]) {
+            labelElem.innerText = gemNames[i];
+        }
+        else
+            labelElem.innerText = "Undiscovered Item";
+        gemsElem.appendChild(labelElem);
+        
+        for(let j = 0; j < 6; j++) {
+            let valElem = document.createElement("div");
+            valElem.innerText = (vals["ItemDiscovery"][gemNames[i]] & Math.pow(2, j)) > 0;
+            gemsElem.appendChild(valElem);
+        }
+    }
 }
 
 function generateRaw () {
