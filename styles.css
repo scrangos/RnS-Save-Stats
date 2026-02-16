@@ -4,6 +4,11 @@ body {
     width: 40rem;
 }
 
+#tabs {
+    display: inline-block;
+    margin-top: 1rem;
+}
+
 .tab {
     display: none;
 }

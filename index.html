@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A web-based save file viewer for Rabbit & Steel">
-    <title>RnS Save Viewer</title>
+    <title>R&S Savefile Viewer</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,9 +26,9 @@
 
     <div id="tabs">
         <button onclick="changeTab(0)">Summary</button>
-        <button onclick="changeTab(1)">Rabbits</button>
-        <button onclick="changeTab(2)">Difficulties</button>
-        <button onclick="changeTab(3)">Items & Upgrades</button>
+        <button disabled onclick="changeTab(1)">Rabbits</button>
+        <button disabled onclick="changeTab(2)">Difficulties</button>
+        <button disabled onclick="changeTab(3)">Items & Upgrades</button>
         <button onclick="changeTab(4)">Raw View</button>
     </div>
     <div id="tab-content">
@@ -61,7 +61,7 @@
                     <div id="shops-0">-</div>
                     <div id="shops-1">-</div>
                     <div id="shops-2">-</div>
-                    <div class="divider">Avg. Shop Visits per Attempt</div>
+                    <div class="divider">Avg. Shops per Attempt</div>
                     <div id="shopratio-0">-</div>
                     <div id="shopratio-1">-</div>
                     <div id="shopratio-2">-</div>
