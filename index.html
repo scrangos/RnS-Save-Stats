@@ -17,6 +17,7 @@
 
     <!-- - - - MAIN SCRIPTS - - - - - -->
     <script defer type="text/javascript" src="main.js"></script>
+    <script defer type="text/javascript" src="collections.js"></script>
 </head>
 <body>
     <label>Upload your save here:</label>
@@ -39,20 +40,20 @@
                     <label>Total Playtime: </label>
                     <span id="playtime"></span>
                 </div>
-                <div class="grid-type">
+                <div class="grid-3">
                     <div></div>
                     <div><u>Total</u></div>
                     <div><u>Solo</u></div>
                     <div><u>Online</u></div>
-                    <div>Total Attempts</div>
+                    <div>Attempts</div>
                     <div id="attempts-0">-</div>
                     <div id="attempts-1">-</div>
                     <div id="attempts-2">-</div>
-                    <div>Total Wins</div>
+                    <div>Wins</div>
                     <div id="wins-0">-</div>
                     <div id="wins-1">-</div>
                     <div id="wins-2">-</div>
-                    <div class="divider">Win Percentage</div>
+                    <div class="divider">Win Rate</div>
                     <div id="winloss-0">-</div>
                     <div id="winloss-1">-</div>
                     <div id="winloss-2">-</div>
@@ -77,7 +78,7 @@
                     <div id="winnest0-2">-</div>
                 </div>
                 <br>
-                <div class="grid-diff">
+                <div class="grid-4">
                     <div></div>
                     <div><u>Cute</u></div>
                     <div><u>Normal</u></div>
@@ -127,7 +128,7 @@
                 <div><small><i>True Random and Chaotic Random runs will cause some of these values to misbehave</i></small></div>
                 <br>
                 <div class="title">Item Progress</div>
-                <div style="display:grid; grid-template-columns: auto auto;">
+                <div class="grid-1">
                     <div>Items Seen: </div>
                     <div id="items-0">0/0</div>
                     <div>Items Picked Up: </div>
@@ -143,7 +144,7 @@
                 </div>
                 <br>
                 <div class="title">Gem Progress</div>
-                <div style="display:grid; grid-template-columns: auto auto;">
+                <div class="grid-1">
                     <div>Gems Seen: </div>
                     <div id="gems-0">0/0</div>
                     <div>Gems Purchased: </div>
@@ -168,7 +169,7 @@
         <div class="tab" id="tab-3">
             <div id="items-content">
                 <div class="title">Items</div>
-                <div class="grid-6" id="item-grid">
+                <div class="grid-6 divider" id="item-grid">
                     <div><u>Item</u></div>
                     <div><u>Seen</u></div>
                     <div><u>Held</u></div>

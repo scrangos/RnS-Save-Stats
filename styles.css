@@ -37,7 +37,6 @@ body {
     border: 2px solid #000;
     margin: 1em;
     padding: 1em;
-    width: 16em;
     
     margin-top: 0.5em;
 }
@@ -62,12 +61,17 @@ body {
     font-size: 1.75em;
 }
 
-.grid-type {
+.grid-1 {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+.grid-3 {
     display: grid;
     grid-template-columns: auto auto auto auto;
 }
 
-.grid-diff {
+.grid-4 {
     display: grid;
     grid-template-columns: auto auto auto auto auto;
 }
@@ -79,4 +83,12 @@ body {
 
 .divider {
     margin-bottom: 0.5rem;
+}
+
+.even {
+    background: #FEF
+}
+
+.odd {
+    background: #EFF
 }

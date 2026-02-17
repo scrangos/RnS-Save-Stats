@@ -1017,32 +1017,37 @@ function generateSummary() {
 
     document.getElementById("playtime").innerText = (vals["Playtime"]["Playtime"]/3600).toFixed(1) + " hours";
 
+
     let nAttempts0 = vals["SaveInfo"]["runCountLocal"];
     let nAttempts1 = vals["SaveInfo"]["runCountOnline"];
-    let nWins0 = arraySum(numWinsPerTypeDiff[0]);
-    let nWins1 = arraySum(numWinsPerTypeDiff[1]);
-    let nShops0 = vals["SaveInfo"]["shopCountLocal_v3"];
-    let nShops1 = vals["SaveInfo"]["shopCountOnline"];
     document.getElementById("attempts-0").innerText = nAttempts0 + nAttempts1;
     document.getElementById("attempts-1").innerText = nAttempts0;
     document.getElementById("attempts-2").innerText = nAttempts1;
+    let nWins0 = arraySum(numWinsPerTypeDiff[0]);
+    let nWins1 = arraySum(numWinsPerTypeDiff[1]);
     document.getElementById("wins-0").innerText = nWins0 + nWins1;
     document.getElementById("wins-1").innerText = nWins0;
     document.getElementById("wins-2").innerText = nWins1;
-    document.getElementById("winloss-0").innerText = ((nWins0 + nWins1) / (nAttempts0 + nAttempts1) * 100).toFixed(1) + '%';
-    document.getElementById("winloss-1").innerText = (nWins0 / nAttempts0 * 100).toFixed(1) + '%';
-    document.getElementById("winloss-2").innerText = (nWins1 / nAttempts1 * 100).toFixed(1) + '%';
+    let winRatio = resolveNaN((nWins0 + nWins1) / (nAttempts0 + nAttempts1));
+    let winRatio0 = resolveNaN(nWins0 / nAttempts0);
+    let winRatio1 = resolveNaN(nWins1 / nAttempts1);
+    document.getElementById("winloss-0").innerText = (winRatio * 100).toFixed(1) + '%';
+    document.getElementById("winloss-1").innerText = (winRatio0 * 100).toFixed(1) + '%';
+    document.getElementById("winloss-2").innerText = (winRatio1 * 100).toFixed(1) + '%';
 
+    let nShops0 = vals["SaveInfo"]["shopCountLocal_v3"];
+    let nShops1 = vals["SaveInfo"]["shopCountOnline"];
     document.getElementById("shops-0").innerText = nShops0 + nShops1;
     document.getElementById("shops-1").innerText = nShops0;
     document.getElementById("shops-2").innerText = nShops1;
-    document.getElementById("shopratio-0").innerText = ((nShops0 + nShops1) / (nAttempts0 + nAttempts1)).toFixed(2);
-    document.getElementById("shopratio-1").innerText = (nShops0 / nAttempts0).toFixed(2);
-    document.getElementById("shopratio-2").innerText = (nShops1 / nAttempts1).toFixed(2);
+    let shopRatio = resolveNaN((nShops0 + nShops1) / (nAttempts0 + nAttempts1));
+    let shopRatio0 = resolveNaN(nShops0 / nAttempts0);
+    let shopRatio1 = resolveNaN(nShops1 / nAttempts1);
+    document.getElementById("shopratio-0").innerText = (shopRatio).toFixed(2);
+    document.getElementById("shopratio-1").innerText = (shopRatio0).toFixed(2);
+    document.getElementById("shopratio-2").innerText = (shopRatio1).toFixed(2);
 
     
-    //todo: this is incomplete, doesn't sort by solo/online
-    //tbh, I'd rather just track fastest/winnest 1, not 3
     document.getElementById("fastest0-1").innerText = fastestWins[0].class + ': ' + msToString(fastestWins[0].FastestOfflineTime);
     document.getElementById("fastest0-2").innerText = fastestWins[1].class + ': ' + msToString(fastestWins[1].FastestOnlineTime);
 
@@ -1051,7 +1056,6 @@ function generateSummary() {
     document.getElementById("winnest0-2").innerText = mostWins[2].class + ': ' + mostWins[2].OnlineWins;
 
     
-
     document.getElementById("kingdomattempts-0").innerText = vals["SaveInfo"]["mapVisitOutskirtsC"];
     document.getElementById("kingdomattempts-1").innerText = vals["SaveInfo"]["mapVisitOutskirtsN"];
     document.getElementById("kingdomattempts-2").innerText = vals["SaveInfo"]["mapVisitOutskirtsH"];
@@ -1062,10 +1066,10 @@ function generateSummary() {
     document.getElementById("kingdomwins-2").innerText = vals["SaveInfo"]["mapWinPinnacleH"];
     document.getElementById("kingdomwins-3").innerText = vals["SaveInfo"]["mapWinPinnacleL"];
 
-    document.getElementById("kingdomratio-0").innerText = (vals["SaveInfo"]["mapWinPinnacleC"]/vals["SaveInfo"]["mapVisitOutskirtsC"]*100).toFixed(1) + '%';
-    document.getElementById("kingdomratio-1").innerText = (vals["SaveInfo"]["mapWinPinnacleN"]/vals["SaveInfo"]["mapVisitOutskirtsN"]*100).toFixed(1) + '%';
-    document.getElementById("kingdomratio-2").innerText = (vals["SaveInfo"]["mapWinPinnacleH"]/vals["SaveInfo"]["mapVisitOutskirtsH"]*100).toFixed(1) + '%';
-    document.getElementById("kingdomratio-3").innerText = (vals["SaveInfo"]["mapWinPinnacleL"]/vals["SaveInfo"]["mapVisitOutskirtsL"]*100).toFixed(1) + '%';
+    document.getElementById("kingdomratio-0").innerText = resolveNaN(vals["SaveInfo"]["mapWinPinnacleC"]/vals["SaveInfo"]["mapVisitOutskirtsC"]*100).toFixed(1) + '%';
+    document.getElementById("kingdomratio-1").innerText = resolveNaN(vals["SaveInfo"]["mapWinPinnacleN"]/vals["SaveInfo"]["mapVisitOutskirtsN"]*100).toFixed(1) + '%';
+    document.getElementById("kingdomratio-2").innerText = resolveNaN(vals["SaveInfo"]["mapWinPinnacleH"]/vals["SaveInfo"]["mapVisitOutskirtsH"]*100).toFixed(1) + '%';
+    document.getElementById("kingdomratio-3").innerText = resolveNaN(vals["SaveInfo"]["mapWinPinnacleL"]/vals["SaveInfo"]["mapVisitOutskirtsL"]*100).toFixed(1) + '%';
 
 
     document.getElementById("extraattempts-0").innerText = vals["SaveInfo"]["mapVisitGeodeC"];
@@ -1078,10 +1082,10 @@ function generateSummary() {
     document.getElementById("extrawins-2").innerText = vals["SaveInfo"]["mapWinReflectionH"];
     document.getElementById("extrawins-3").innerText = vals["SaveInfo"]["mapWinReflectionL"];
 
-    document.getElementById("extraratio-0").innerText = (vals["SaveInfo"]["mapWinReflectionC"]/vals["SaveInfo"]["mapVisitGeodeC"]*100).toFixed(1) + '%';
-    document.getElementById("extraratio-1").innerText = (vals["SaveInfo"]["mapWinReflectionN"]/vals["SaveInfo"]["mapVisitGeodeN"]*100).toFixed(1) + '%';
-    document.getElementById("extraratio-2").innerText = (vals["SaveInfo"]["mapWinReflectionH"]/vals["SaveInfo"]["mapVisitGeodeH"]*100).toFixed(1) + '%';
-    document.getElementById("extraratio-3").innerText = (vals["SaveInfo"]["mapWinReflectionL"]/vals["SaveInfo"]["mapVisitGeodeL"]*100).toFixed(1) + '%';
+    document.getElementById("extraratio-0").innerText = resolveNaN(vals["SaveInfo"]["mapWinReflectionC"]/vals["SaveInfo"]["mapVisitGeodeC"]*100).toFixed(1) + '%';
+    document.getElementById("extraratio-1").innerText = resolveNaN(vals["SaveInfo"]["mapWinReflectionN"]/vals["SaveInfo"]["mapVisitGeodeN"]*100).toFixed(1) + '%';
+    document.getElementById("extraratio-2").innerText = resolveNaN(vals["SaveInfo"]["mapWinReflectionH"]/vals["SaveInfo"]["mapVisitGeodeH"]*100).toFixed(1) + '%';
+    document.getElementById("extraratio-3").innerText = resolveNaN(vals["SaveInfo"]["mapWinReflectionL"]/vals["SaveInfo"]["mapVisitGeodeL"]*100).toFixed(1) + '%';
 
     
     document.getElementById("truerand-0").innerText = vals["SaveInfo"]["mapWinTrueRandC"];
@@ -1130,44 +1134,74 @@ function generateDifficulties() {
 function generateItems() {
     //todo: sort
     //todo: real names
+    //todo: include gemless entries?
     let itemsElem = document.getElementById("item-grid");
     let itemsChildren = itemsElem.children;
-    for(let i = 7; i < itemsChildren.length; i++)
-        itemsChildren[i].remove();
+    while(itemsChildren.length > 7)
+        itemsChildren[7].remove();
 
-    for(let i in itemNames) {
+    for(let i in ITEMS) {
         let labelElem = document.createElement("div");
-        if(vals["ItemDiscovery"][itemNames[i]]) {
-            labelElem.innerText = itemNames[i];
+        if(vals["ItemDiscovery"][ITEMS[i].key]) {
+            labelElem.innerText = ITEMS[i].name;
         }
         else
             labelElem.innerText = "Undiscovered Item";
+
+        if(i%2) labelElem.classList.add("odd");
+        else labelElem.classList.add("even");
+
         itemsElem.appendChild(labelElem);
         
         for(let j = 0; j < 6; j++) {
             let valElem = document.createElement("div");
-            valElem.innerText = (vals["ItemDiscovery"][itemNames[i]] & Math.pow(2, j)) > 0;
+            valElem.innerText = (vals["ItemDiscovery"][ITEMS[i].key] & Math.pow(2, j)) > 0 ? "X" : "";
+            
+            if(i%2) valElem.classList.add("odd");
+            else valElem.classList.add("even");
             itemsElem.appendChild(valElem);
         }
     }
     
     let gemsElem = document.getElementById("gems-grid");
     let gemschildren = gemsElem.children;
-    for(let i = 7; i < gemschildren.length; i++)
-        gemschildren[i].remove();
+    while(gemschildren.length > 7)
+        gemschildren[7].remove();
 
-    for(let i in itemNames) {
-        let labelElem = document.createElement("div");
-        if(vals["ItemDiscovery"][gemNames[i]]) {
-            labelElem.innerText = gemNames[i];
+    let cId = -1;
+    for(let i in GEMS) {
+        if(cId != GEMS[i].cId) {
+            cId = GEMS[i].cId;
+            let styleString = `background:${RABBITS[cId].color};`;
+            let charElem = document.createElement("div");
+            charElem.setAttribute("style", styleString);
+            charElem.textContent = RABBITS[cId].name;
+            gemsElem.appendChild(charElem);
+            for(let j = 0; j < 6; j++) {
+                let fillerElem = document.createElement("div");
+                fillerElem.setAttribute("style", styleString);
+                gemsElem.appendChild(fillerElem);
+            }
         }
-        else
-            labelElem.innerText = "Undiscovered Item";
+        let labelElem = document.createElement("div");
+        if(GEMS[i].type > 0) labelElem.innerText = GEMTYPES[GEMS[i].type];
+        else labelElem.innerText = ABILITIES[GEMS[i].slot];
+
+        if(i%2) labelElem.classList.add("odd");
+        else labelElem.classList.add("even");
+
         gemsElem.appendChild(labelElem);
         
         for(let j = 0; j < 6; j++) {
             let valElem = document.createElement("div");
-            valElem.innerText = (vals["ItemDiscovery"][gemNames[i]] & Math.pow(2, j)) > 0;
+            if(GEMS[i].type == 0 && j < 2) valElem.innerText = '-';
+            else
+                valElem.innerText = (vals["ItemDiscovery"][GEMS[i].key] & Math.pow(2, j)) > 0 ? "X" : ""
+            
+
+            if(i%2) valElem.classList.add("odd");
+            else valElem.classList.add("even");
+
             gemsElem.appendChild(valElem);
         }
     }
@@ -1222,4 +1256,10 @@ function msToString(time) {
     seconds = seconds > 10 ? seconds : '0' + seconds;
     let ms = time % 1000;
     return `${mins}:${seconds}`;
+}
+
+function resolveNaN(num) {
+    if(num != num)
+        return 0;
+    return num;
 }
