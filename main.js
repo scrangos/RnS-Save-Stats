@@ -1141,6 +1141,14 @@ function generateItems() {
         itemsChildren[7].remove();
 
     for(let i in ITEMS) {
+        if(i && !(i % 8)) {
+            for(let j = 0; j < 7; j++) {
+                let fillElem = document.createElement("div");
+                fillElem.setAttribute("style", "height: 0.5em");
+                itemsElem.appendChild(fillElem);
+            }
+        }
+
         let labelElem = document.createElement("div");
         if(vals["ItemDiscovery"][ITEMS[i].key]) {
             labelElem.innerText = ITEMS[i].name;
@@ -1150,6 +1158,7 @@ function generateItems() {
 
         if(i%2) labelElem.classList.add("odd");
         else labelElem.classList.add("even");
+        labelElem.classList.add("grid-left");
 
         itemsElem.appendChild(labelElem);
         
@@ -1185,10 +1194,21 @@ function generateItems() {
         }
         let labelElem = document.createElement("div");
         if(GEMS[i].type > 0) labelElem.innerText = GEMTYPES[GEMS[i].type];
-        else labelElem.innerText = ABILITIES[GEMS[i].slot];
+        else {
+            
+            for(let j = 0; j < 7; j++) {
+                let fillElem = document.createElement("div");
+                fillElem.setAttribute("style", "height: 0.5em");
+                gemsElem.appendChild(fillElem);
+            }
+            labelElem.innerText = ABILITIES[GEMS[i].slot];
+
+        }
 
         if(i%2) labelElem.classList.add("odd");
         else labelElem.classList.add("even");
+
+        labelElem.classList.add("grid-left");
 
         gemsElem.appendChild(labelElem);
         

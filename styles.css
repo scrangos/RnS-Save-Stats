@@ -82,7 +82,7 @@ body {
 }
 
 .divider {
-    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
 }
 
 .even {
@@ -91,4 +91,22 @@ body {
 
 .odd {
     background: #EFF
+}
+
+.grid-top {
+    border-bottom: 1px solid #000;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.grid-left {
+    border-right: 1px solid #000;
+}
+
+.grid > div:not(.grid-left) {
+    text-align: center;
+}
+
+.centered {
+    text-align: center;
 }
