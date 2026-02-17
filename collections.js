@@ -2,36 +2,42 @@ const RABBITS = [
     {
         key: "wizard",
         name: "Wizard",
+        code: "Wiz",
         color: "#694DDD",
         id: 0
     },
     {
         key: "assassin",
         name: "Assassin",
+        code: "ASS",
         color: "#4C81FF",
         id: 1
     },
     {
         key: "hblade",
         name: "Heavyblade",
+        code: "HB",
         color: "#E873A8",
         id: 2
     },
     {
         key: "dancer",
         name: "Dancer",
+        code: "Dan",
         color: "#FFE0A1",
         id: 3
     },
     {
         key: "druid",
         name: "Druid",
+        code: "Dru",
         color: "#59DF87",
         id: 4
     },
     {
         key: "spellsword",
         itemKey: "spsword",
+        code: "SS",
         name: "Spellsword",
         color: "#C268FF",
         id: 5
@@ -39,48 +45,56 @@ const RABBITS = [
     {
         key: "sniper",
         name: "Sniper",
+        code: "Sni",
         color: "#597BFF",
         id: 6
     },
     {
         key: "bruiser",
         name: "Bruiser",
+        code: "Bru",
         color: "#D14040",
         id: 7
     },
     {
         key: "defender",
         name: "Defender",
+        code: "Def",
         color: "#FFFAE8",
         id: 8
     },
     {
         key: "ancient",
         name: "Ancient",
+        code: "Anc",
         color: "#6DDAA7",
         id: 9
     },
     {
         key: "hammer",
         name: "Hammermaid",
+        code: "HM",
         color: "#FFDCE6",
         id: 10
     },
     {
         key: "pyro",
         name: "Pyromancer",
+        code: "Pyro",
         color: "#FF6F66",
         id: 11
     },
     {
         key: "gunner",
         name: "Grenadier",
+        code: "Gunny",
         color: "#6BFFCD",
         id: 12
     },
     {
         key: "shadow",
         name: "Shadow",
+        code: "Sh",
         color: "#9C9C9C",
         id: 13
     },
@@ -1493,6 +1507,10 @@ const GEMTYPES = [
     "base", "opal", "sapphire", "ruby", "garnet", "emerald"
 ]
 
+const GEMTYPESCAPS = [
+    "Base", "Opal", "Sapphire", "Ruby", "Garnet", "Emerald"
+]
+
 const ABILITIES = [
     "Primary", "Secondary", "Special", "Defensive"
 ];
@@ -1504,20 +1522,23 @@ const GEMS = [
     // 1. character id
     // 2. type: base, opal, sapphire, ruby, garnet, emerald
 function buildGemsObject() {
+    let ind = 0;
     for(let i in RABBITS) {
         for(let j = 0; j < 4; j++) {
             for(let k in GEMTYPES) {
                 let rKey = RABBITS[i].key;
                 if(RABBITS[i].itemKey) rKey = RABBITS[i].itemKey;
-                
+
                 let key = `mv_${rKey}_${j}`
                 if(k > 0) key += `_${GEMTYPES[k]}`;
                 GEMS.push({
                     key: key,
                     type: k,
                     cId: i,
+                    id: ind,
                     slot: j
                 });
+                ind++;
             }
         }
     }

@@ -1,11 +1,16 @@
 let file, fileText;
 let vals;
 let currentTab = 0;
+let prevSortTypes = {
+    items: 1,
+    gems: 1
+}
+
 
 let rabbitStats = [];
-let items = [];
+let itemsArray = [];
 let itemTotals = [];
-let gems = [];
+let gemsArray = [];
 let gemTotals = [];
 
 const NEVER = 99999999;
@@ -20,570 +25,6 @@ const diffs = [
 ];
 const types = [
     "Offline", "Online"
-];
-const itemNames = [
-    "it_abyss_artifact",
-    "it_altair_dagger",
-    "it_amethyst_bracelet",
-    "it_angels_halo",
-    "it_apple_plate",
-    "it_aquamarine_bracelet",
-    "it_artist_smock",
-    "it_assassins_knife",
-    "it_ballroom_gown",
-    "it_battery_shield",
-    "it_battlemaiden_armor",
-    "it_beach_sandals",
-    "it_black_wakizashi",
-    "it_blackbolt_ribbon",
-    "it_blackhole_charm",
-    "it_blacksteel_buckler",
-    "it_blackwing_staff",
-    "it_bladed_cloak",
-    "it_blood_vial",
-    "it_bloodflower_brooch",
-    "it_bloodhound_greatsword",
-    "it_bloody_bandage",
-    "it_blue_rose",
-    "it_bluebolt_staff",
-    "it_bolt_staff",
-    "it_book_of_cheats",
-    "it_boulder_shield",
-    "it_brightstorm_spear",
-    "it_butterfly_hairpin",
-    "it_butterfly_ocarina",
-    "it_calling_bell",
-    "it_canary_charm",
-    "it_caramel_tea",
-    "it_cavers_cloak",
-    "it_chemists_coat",
-    "it_chrome_shield",
-    "it_clay_rabbit",
-    "it_clockwork_tome",
-    "it_cloud_guard",
-    "it_coldsteel_shield",
-    "it_colorful_earrings",
-    "it_comforting_coat",
-    "it_compound_gloves",
-    "it_crane_katana",
-    "it_crescentmoon_dagger",
-    "it_crowfeather_hairpin",
-    "it_crown_of_love",
-    "it_crown_of_storms",
-    "it_crown_of_swords",
-    "it_curse_talon",
-    "it_cursed_candlestaff",
-    "it_dark_wings",
-    "it_darkcloud_necklace",
-    "it_darkcrystal_rose",
-    "it_darkglass_spear",
-    "it_darkmage_charm",
-    "it_darkmagic_blade",
-    "it_darkstorm_knife",
-    "it_deathcap_tome",
-    "it_demon_horns",
-    "it_desert_earrings",
-    "it_diamond_shield",
-    "it_divine_mirror",
-    "it_dragonhead_spear",
-    "it_drill_shield",
-    "it_dynamite_staff",
-    "it_eaglewing_charm",
-    "it_emerald_chestplate",
-    "it_eternity_flute",
-    "it_fairy_spear",
-    "it_falconfeather_dagger",
-    "it_fanciful_book",
-    "it_feathered_overcoat",
-    "it_firescale_corset",
-    "it_firststrike_bracelet",
-    "it_flame_bow",
-    "it_flamedancer_dagger",
-    "it_flamewalker_boots",
-    "it_floral_bow",
-    "it_fossil_dagger",
-    "it_frost_dagger",
-    "it_frozen_staff",
-    "it_garnet_staff",
-    "it_gemini_necklace",
-    "it_ghost_spear",
-    "it_giant_paintbrush",
-    "it_giant_stone_club",
-    "it_glacier_spear",
-    "it_gladiator_helmet",
-    "it_glittering_trumpet",
-    "it_golden_chime",
-    "it_golden_katana",
-    "it_golems_claymore",
-    "it_grandmaster_spear",
-    "it_granite_greatsword",
-    "it_grasswoven_bracelet",
-    "it_greatsword_pendant",
-    "it_greysteel_shield",
-    "it_handmade_charm",
-    "it_haste_boots",
-    "it_haunted_gloves",
-    "it_hawkfeather_fan",
-    "it_heavens_codex",
-    "it_hells_codex",
-    "it_hermes_bow",
-    "it_hexed_blindfold",
-    "it_hidden_blade",
-    "it_holy_greatsword",
-    "it_hooked_staff",
-    "it_hydrous_blob",
-    "it_icicle_earrings",
-    "it_iron_grieves",
-    "it_iron_pickaxe",
-    "it_ivy_staff",
-    "it_jade_staff",
-    "it_jesters_hat",
-    "it_kappa_shield",
-    "it_killing_note",
-    "it_kunoichi_hood",
-    "it_kyou_no_omikuji",
-    "it_lancer_gauntlets",
-    "it_lapis_sword",
-    "it_large_anchor",
-    "it_large_umbrella",
-    "it_leech_staff",
-    "it_lefthand_cast",
-    "it_lightning_bow",
-    "it_lion_charm",
-    "it_lonesome_pendant",
-    "it_lost_pendant",
-    "it_lullaby_harp",
-    "it_maid_outfit",
-    "it_marble_clasp",
-    "it_memory_greatsword",
-    "it_mermaid_scale",
-    "it_meteor_staff",
-    "it_midsummer_dress",
-    "it_mimick_rabbitfoot",
-    "it_miners_headlamp",
-    "it_moon_pendant",
-    "it_moss_shield",
-    "it_mountain_staff",
-    "it_necronomicon",
-    "it_night_sword",
-    "it_nightguard_gloves",
-    "it_nightingale_gown",
-    "it_nightstar_grimoire",
-    "it_ninja_robe",
-    "it_ninjutsu_scroll",
-    "it_nova_crown",
-    "it_obsidian_hairpin",
-    "it_obsidian_rod",
-    "it_occult_dagger",
-    "it_old_bonnet",
-    "it_onepiece_swimsuit",
-    "it_oni_staff",
-    "it_opal_necklace",
-    "it_ornamental_bell",
-    "it_painters_beret",
-    "it_pajama_hat",
-    "it_palette_shield",
-    "it_performers_shoes",
-    "it_peridot_rapier",
-    "it_phantom_dagger",
-    "it_phoenix_charm",
-    "it_pidgeon_bow",
-    "it_pocketwatch",
-    "it_pointed_ring",
-    "it_poisonfrog_charm",
-    "it_polar_coat",
-    "it_purification_rod",
-    "it_pyrite_earrings",
-    "it_quartz_shield",
-    "it_queens_crown",
-    "it_raiju_crown",
-    "it_rain_spear",
-    "it_rainbow_cape",
-    "it_raindrop_earrings",
-    "it_raven_grimoire",
-    "it_ravens_dagger",
-    "it_reaper_cloak",
-    "it_red_tanzaku",
-    "it_redblack_ribbon",
-    "it_reddragon_blade",
-    "it_redwhite_ribbon",
-    "it_reflection_shield",
-    "it_ribboned_staff",
-    "it_righthand_cast",
-    "it_robe_of_dark",
-    "it_robe_of_light",
-    "it_rockdragon_mail",
-    "it_rosered_leotard",
-    "it_royal_staff",
-    "it_ruby_circlet",
-    "it_ruins_sword",
-    "it_rusted_greatsword",
-    "it_sacred_bow",
-    "it_sacred_shield",
-    "it_sacredstone_charm",
-    "it_saltwater_staff",
-    "it_sand_shovel",
-    "it_sandpriestess_spear",
-    "it_sapphire_violin",
-    "it_sawtooth_cleaver",
-    "it_seashell_shield",
-    "it_sewing_sword",
-    "it_shadow_bracelet",
-    "it_sharpedged_shield",
-    "it_shield_of_smiles",
-    "it_shinobi_tabi",
-    "it_shinsoku_katana",
-    "it_shockwave_tome",
-    "it_shrinemaidens_kosode",
-    "it_silver_coin",
-    "it_sketchbook",
-    "it_sleeping_greatbow",
-    "it_smoke_shield",
-    "it_snakefang_dagger",
-    "it_snipers_eyeglasses",
-    "it_snow_boots",
-    "it_spark_of_determination",
-    "it_sparrow_feather",
-    "it_spear_of_remorse",
-    "it_spiderbite_bow",
-    "it_spiked_shield",
-    "it_spinning_chakram",
-    "it_springloaded_scythe",
-    "it_staff_of_sorrow",
-    "it_starry_cloak",
-    "it_staticshock_earrings",
-    "it_stirring_spoon",
-    "it_stonebreaker_staff",
-    "it_stoneplate_armor",
-    "it_storm_petticoat",
-    "it_stormdance_gown",
-    "it_straw_hat",
-    "it_strawberry_cake",
-    "it_strongmans_bar",
-    "it_stuffed_rabbit",
-    "it_sun_pendant",
-    "it_sun_sword",
-    "it_sunflower_crown",
-    "it_sweet_taffy",
-    "it_tactician_rod",
-    "it_talon_charm",
-    "it_teacher_knife",
-    "it_thiefs_coat",
-    "it_throwing_dagger",
-    "it_thunderclap_gloves",
-    "it_tidal_greatsword",
-    "it_timemage_cap",
-    "it_timespace_dagger",
-    "it_timewarp_wand",
-    "it_tiny_fork",
-    "it_tiny_hourglass",
-    "it_tiny_wings",
-    "it_topaz_charm",
-    "it_tornado_staff",
-    "it_tough_gauntlet",
-    "it_trick_shield",
-    "it_twinstar_earrings",
-    "it_unsacred_pendant",
-    "it_usagi_kamen",
-    "it_vampiric_dagger",
-    "it_vanilla_wafers",
-    "it_vega_spear",
-    "it_venom_hood",
-    "it_volcano_spear",
-    "it_vorpal_dao",
-    "it_waterfall_polearm",
-    "it_watermage_pendant",
-    "it_whiteflame_staff",
-    "it_whitewing_bracelet",
-    "it_wind_spear",
-    "it_windbite_dagger",
-    "it_winged_cap",
-    "it_winter_hat",
-    "it_witchs_cloak",
-    "it_wolf_hood",
-    "it_youkai_bracelet"
-];
-const gemNames = [
-    "mv_ancient_0_emerald",
-    "mv_ancient_0_garnet",
-    "mv_ancient_0_opal",
-    "mv_ancient_0_ruby",
-    "mv_ancient_0_sapphire",
-    "mv_ancient_1_emerald",
-    "mv_ancient_1_garnet",
-    "mv_ancient_1_opal",
-    "mv_ancient_1_ruby",
-    "mv_ancient_1_sapphire",
-    "mv_ancient_2_emerald",
-    "mv_ancient_2_garnet",
-    "mv_ancient_2_opal",
-    "mv_ancient_2_ruby",
-    "mv_ancient_2_sapphire",
-    "mv_ancient_3_emerald",
-    "mv_ancient_3_garnet",
-    "mv_ancient_3_opal",
-    "mv_ancient_3_ruby",
-    "mv_ancient_3_sapphire",
-    "mv_assassin_0_emerald",
-    "mv_assassin_0_garnet",
-    "mv_assassin_0_opal",
-    "mv_assassin_0_ruby",
-    "mv_assassin_0_sapphire",
-    "mv_assassin_1_emerald",
-    "mv_assassin_1_garnet",
-    "mv_assassin_1_opal",
-    "mv_assassin_1_ruby",
-    "mv_assassin_1_sapphire",
-    "mv_assassin_2_emerald",
-    "mv_assassin_2_garnet",
-    "mv_assassin_2_opal",
-    "mv_assassin_2_ruby",
-    "mv_assassin_2_sapphire",
-    "mv_assassin_3_emerald",
-    "mv_assassin_3_garnet",
-    "mv_assassin_3_opal",
-    "mv_assassin_3_ruby",
-    "mv_assassin_3_sapphire",
-    "mv_bruiser_0_emerald",
-    "mv_bruiser_0_garnet",
-    "mv_bruiser_0_opal",
-    "mv_bruiser_0_ruby",
-    "mv_bruiser_0_sapphire",
-    "mv_bruiser_1_emerald",
-    "mv_bruiser_1_garnet",
-    "mv_bruiser_1_opal",
-    "mv_bruiser_1_ruby",
-    "mv_bruiser_1_sapphire",
-    "mv_bruiser_2_emerald",
-    "mv_bruiser_2_garnet",
-    "mv_bruiser_2_opal",
-    "mv_bruiser_2_ruby",
-    "mv_bruiser_2_sapphire",
-    "mv_bruiser_3_emerald",
-    "mv_bruiser_3_garnet",
-    "mv_bruiser_3_opal",
-    "mv_bruiser_3_ruby",
-    "mv_bruiser_3_sapphire",
-    "mv_dancer_0_emerald",
-    "mv_dancer_0_garnet",
-    "mv_dancer_0_opal",
-    "mv_dancer_0_ruby",
-    "mv_dancer_0_sapphire",
-    "mv_dancer_1_emerald",
-    "mv_dancer_1_garnet",
-    "mv_dancer_1_opal",
-    "mv_dancer_1_ruby",
-    "mv_dancer_1_sapphire",
-    "mv_dancer_2_emerald",
-    "mv_dancer_2_garnet",
-    "mv_dancer_2_opal",
-    "mv_dancer_2_ruby",
-    "mv_dancer_2_sapphire",
-    "mv_dancer_3_emerald",
-    "mv_dancer_3_garnet",
-    "mv_dancer_3_opal",
-    "mv_dancer_3_ruby",
-    "mv_dancer_3_sapphire",
-    "mv_defender_0_emerald",
-    "mv_defender_0_garnet",
-    "mv_defender_0_opal",
-    "mv_defender_0_ruby",
-    "mv_defender_0_sapphire",
-    "mv_defender_1_emerald",
-    "mv_defender_1_garnet",
-    "mv_defender_1_opal",
-    "mv_defender_1_ruby",
-    "mv_defender_1_sapphire",
-    "mv_defender_2_emerald",
-    "mv_defender_2_garnet",
-    "mv_defender_2_opal",
-    "mv_defender_2_ruby",
-    "mv_defender_2_sapphire",
-    "mv_defender_3_emerald",
-    "mv_defender_3_garnet",
-    "mv_defender_3_opal",
-    "mv_defender_3_ruby",
-    "mv_defender_3_sapphire",
-    "mv_druid_0_emerald",
-    "mv_druid_0_garnet",
-    "mv_druid_0_opal",
-    "mv_druid_0_ruby",
-    "mv_druid_0_sapphire",
-    "mv_druid_1_emerald",
-    "mv_druid_1_garnet",
-    "mv_druid_1_opal",
-    "mv_druid_1_ruby",
-    "mv_druid_1_sapphire",
-    "mv_druid_2_emerald",
-    "mv_druid_2_garnet",
-    "mv_druid_2_opal",
-    "mv_druid_2_ruby",
-    "mv_druid_2_sapphire",
-    "mv_druid_3_emerald",
-    "mv_druid_3_garnet",
-    "mv_druid_3_opal",
-    "mv_druid_3_ruby",
-    "mv_druid_3_sapphire",
-    "mv_gunner_0_emerald",
-    "mv_gunner_0_garnet",
-    "mv_gunner_0_opal",
-    "mv_gunner_0_ruby",
-    "mv_gunner_0_sapphire",
-    "mv_gunner_1_emerald",
-    "mv_gunner_1_garnet",
-    "mv_gunner_1_opal",
-    "mv_gunner_1_ruby",
-    "mv_gunner_1_sapphire",
-    "mv_gunner_2_emerald",
-    "mv_gunner_2_garnet",
-    "mv_gunner_2_opal",
-    "mv_gunner_2_ruby",
-    "mv_gunner_2_sapphire",
-    "mv_gunner_3_emerald",
-    "mv_gunner_3_garnet",
-    "mv_gunner_3_opal",
-    "mv_gunner_3_ruby",
-    "mv_gunner_3_sapphire",
-    "mv_hammer_0_emerald",
-    "mv_hammer_0_garnet",
-    "mv_hammer_0_opal",
-    "mv_hammer_0_ruby",
-    "mv_hammer_0_sapphire",
-    "mv_hammer_1_emerald",
-    "mv_hammer_1_garnet",
-    "mv_hammer_1_opal",
-    "mv_hammer_1_ruby",
-    "mv_hammer_1_sapphire",
-    "mv_hammer_2_emerald",
-    "mv_hammer_2_garnet",
-    "mv_hammer_2_opal",
-    "mv_hammer_2_ruby",
-    "mv_hammer_2_sapphire",
-    "mv_hammer_3_emerald",
-    "mv_hammer_3_garnet",
-    "mv_hammer_3_opal",
-    "mv_hammer_3_ruby",
-    "mv_hammer_3_sapphire",
-    "mv_hblade_0_emerald",
-    "mv_hblade_0_garnet",
-    "mv_hblade_0_opal",
-    "mv_hblade_0_ruby",
-    "mv_hblade_0_sapphire",
-    "mv_hblade_1_emerald",
-    "mv_hblade_1_garnet",
-    "mv_hblade_1_opal",
-    "mv_hblade_1_ruby",
-    "mv_hblade_1_sapphire",
-    "mv_hblade_2_emerald",
-    "mv_hblade_2_garnet",
-    "mv_hblade_2_opal",
-    "mv_hblade_2_ruby",
-    "mv_hblade_2_sapphire",
-    "mv_hblade_3_emerald",
-    "mv_hblade_3_garnet",
-    "mv_hblade_3_opal",
-    "mv_hblade_3_ruby",
-    "mv_hblade_3_sapphire",
-    "mv_pyro_0_emerald",
-    "mv_pyro_0_garnet",
-    "mv_pyro_0_opal",
-    "mv_pyro_0_ruby",
-    "mv_pyro_0_sapphire",
-    "mv_pyro_1_emerald",
-    "mv_pyro_1_garnet",
-    "mv_pyro_1_opal",
-    "mv_pyro_1_ruby",
-    "mv_pyro_1_sapphire",
-    "mv_pyro_2_emerald",
-    "mv_pyro_2_garnet",
-    "mv_pyro_2_opal",
-    "mv_pyro_2_ruby",
-    "mv_pyro_2_sapphire",
-    "mv_pyro_3_emerald",
-    "mv_pyro_3_garnet",
-    "mv_pyro_3_opal",
-    "mv_pyro_3_ruby",
-    "mv_pyro_3_sapphire",
-    "mv_shadow_0_emerald",
-    "mv_shadow_0_garnet",
-    "mv_shadow_0_opal",
-    "mv_shadow_0_ruby",
-    "mv_shadow_0_sapphire",
-    "mv_shadow_1_emerald",
-    "mv_shadow_1_garnet",
-    "mv_shadow_1_opal",
-    "mv_shadow_1_ruby",
-    "mv_shadow_1_sapphire",
-    "mv_shadow_2_emerald",
-    "mv_shadow_2_garnet",
-    "mv_shadow_2_opal",
-    "mv_shadow_2_ruby",
-    "mv_shadow_2_sapphire",
-    "mv_shadow_3_emerald",
-    "mv_shadow_3_garnet",
-    "mv_shadow_3_opal",
-    "mv_shadow_3_ruby",
-    "mv_shadow_3_sapphire",
-    "mv_sniper_0_emerald",
-    "mv_sniper_0_garnet",
-    "mv_sniper_0_opal",
-    "mv_sniper_0_ruby",
-    "mv_sniper_0_sapphire",
-    "mv_sniper_1_emerald",
-    "mv_sniper_1_garnet",
-    "mv_sniper_1_opal",
-    "mv_sniper_1_ruby",
-    "mv_sniper_1_sapphire",
-    "mv_sniper_2_emerald",
-    "mv_sniper_2_garnet",
-    "mv_sniper_2_opal",
-    "mv_sniper_2_ruby",
-    "mv_sniper_2_sapphire",
-    "mv_sniper_3_emerald",
-    "mv_sniper_3_garnet",
-    "mv_sniper_3_opal",
-    "mv_sniper_3_ruby",
-    "mv_sniper_3_sapphire",
-    "mv_spsword_0_emerald",
-    "mv_spsword_0_garnet",
-    "mv_spsword_0_opal",
-    "mv_spsword_0_ruby",
-    "mv_spsword_0_sapphire",
-    "mv_spsword_1_emerald",
-    "mv_spsword_1_garnet",
-    "mv_spsword_1_opal",
-    "mv_spsword_1_ruby",
-    "mv_spsword_1_sapphire",
-    "mv_spsword_2_emerald",
-    "mv_spsword_2_garnet",
-    "mv_spsword_2_opal",
-    "mv_spsword_2_ruby",
-    "mv_spsword_2_sapphire",
-    "mv_spsword_3_emerald",
-    "mv_spsword_3_garnet",
-    "mv_spsword_3_opal",
-    "mv_spsword_3_ruby",
-    "mv_spsword_3_sapphire",
-    "mv_wizard_0_emerald",
-    "mv_wizard_0_garnet",
-    "mv_wizard_0_opal",
-    "mv_wizard_0_ruby",
-    "mv_wizard_0_sapphire",
-    "mv_wizard_1_emerald",
-    "mv_wizard_1_garnet",
-    "mv_wizard_1_opal",
-    "mv_wizard_1_ruby",
-    "mv_wizard_1_sapphire",
-    "mv_wizard_2_emerald",
-    "mv_wizard_2_garnet",
-    "mv_wizard_2_opal",
-    "mv_wizard_2_ruby",
-    "mv_wizard_2_sapphire",
-    "mv_wizard_3_emerald",
-    "mv_wizard_3_garnet",
-    "mv_wizard_3_opal",
-    "mv_wizard_3_ruby",
-    "mv_wizard_3_sapphire"
 ];
 
 function init() {
@@ -647,6 +88,7 @@ function handleUpload(file) {
         generateClasses();
         generateDifficulties();
         generateItems();
+        generateGems();
         generateRaw();
     }
     reader.readAsText(file);
@@ -746,24 +188,26 @@ function processRabbits() {
 }
 
 function processItems() {
-    items = [];
+    itemsArray = [];
     itemTotals = [0, 0, 0, 0, 0, 0];
-    for(let i in itemNames) {
-        if(vals["ItemDiscovery"][itemNames[i]]) {
-            let seen = (vals["ItemDiscovery"][itemNames[i]] & 1) > 0;
-            let held = (vals["ItemDiscovery"][itemNames[i]] & 2) > 0;
-            let cute = (vals["ItemDiscovery"][itemNames[i]] & 4) > 0;
-            let normal = (vals["ItemDiscovery"][itemNames[i]] & 8) > 0;
-            let hard = (vals["ItemDiscovery"][itemNames[i]] & 16) > 0;
-            let lunar = (vals["ItemDiscovery"][itemNames[i]] & 32) > 0;
-            items.push({
-                key: itemNames[i],
+    for(let i in ITEMS) {
+        if(vals["ItemDiscovery"][ITEMS[i].key]) {
+            let seen = (vals["ItemDiscovery"][ITEMS[i].key] & 1) > 0;
+            let held = (vals["ItemDiscovery"][ITEMS[i].key] & 2) > 0;
+            let cute = (vals["ItemDiscovery"][ITEMS[i].key] & 4) > 0;
+            let normal = (vals["ItemDiscovery"][ITEMS[i].key] & 8) > 0;
+            let hard = (vals["ItemDiscovery"][ITEMS[i].key] & 16) > 0;
+            let lunar = (vals["ItemDiscovery"][ITEMS[i].key] & 32) > 0;
+            itemsArray.push({
+                key: ITEMS[i].key,
+                name: ITEMS[i].name,
+                id: ITEMS[i].id,
                 seen: seen,
                 held: held,
                 cute: cute,
                 normal: normal,
                 hard: hard,
-                lunar: lunar,
+                lunar: lunar
             });
             if(seen) itemTotals[0]++;
             if(held) itemTotals[1]++;
@@ -774,24 +218,28 @@ function processItems() {
         }
     }
     
-    gems = [];
+    gemsArray = [];
     gemTotals = [0, 0, 0, 0, 0, 0];
-    for(let i in gemNames) {
-        if(vals["ItemDiscovery"][gemNames[i]]) {
-            let seen = (vals["ItemDiscovery"][gemNames[i]] & 1) > 0;
-            let held = (vals["ItemDiscovery"][gemNames[i]] & 2) > 0;
-            let cute = (vals["ItemDiscovery"][gemNames[i]] & 4) > 0;
-            let normal = (vals["ItemDiscovery"][gemNames[i]] & 8) > 0;
-            let hard = (vals["ItemDiscovery"][gemNames[i]] & 16) > 0;
-            let lunar = (vals["ItemDiscovery"][gemNames[i]] & 32) > 0;
-            items.push({
-                key: gemNames[i],
+    for(let i in GEMS) {
+        if(vals["ItemDiscovery"][GEMS[i].key]) {
+            let seen = (vals["ItemDiscovery"][GEMS[i].key] & 1) > 0;
+            let held = (vals["ItemDiscovery"][GEMS[i].key] & 2) > 0;
+            let cute = (vals["ItemDiscovery"][GEMS[i].key] & 4) > 0;
+            let normal = (vals["ItemDiscovery"][GEMS[i].key] & 8) > 0;
+            let hard = (vals["ItemDiscovery"][GEMS[i].key] & 16) > 0;
+            let lunar = (vals["ItemDiscovery"][GEMS[i].key] & 32) > 0;
+            gemsArray.push({
+                key: GEMS[i].key,
+                type: GEMS[i].type,
+                cId: GEMS[i].cId,
+                slot: GEMS[i].slot,
+                id: GEMS[i].id,
                 seen: seen,
                 held: held,
                 cute: cute,
                 normal: normal,
                 hard: hard,
-                lunar: lunar,
+                lunar: lunar
             });
             if(seen) gemTotals[0]++;
             if(held) gemTotals[1]++;
@@ -1100,20 +548,20 @@ function generateSummary() {
 
 
     //items
-    document.getElementById("items-0").innerText = itemTotals[0] + '/' + itemNames.length;
-    document.getElementById("items-1").innerText = itemTotals[1] + '/' + itemNames.length;
-    document.getElementById("items-2").innerText = itemTotals[2] + '/' + itemNames.length;
-    document.getElementById("items-3").innerText = itemTotals[3] + '/' + itemNames.length;
-    document.getElementById("items-4").innerText = itemTotals[4] + '/' + itemNames.length;
-    document.getElementById("items-5").innerText = itemTotals[5] + '/' + itemNames.length;
+    document.getElementById("items-0").innerText = itemTotals[0] + '/' + ITEMS.length;
+    document.getElementById("items-1").innerText = itemTotals[1] + '/' + ITEMS.length;
+    document.getElementById("items-2").innerText = itemTotals[2] + '/' + ITEMS.length;
+    document.getElementById("items-3").innerText = itemTotals[3] + '/' + ITEMS.length;
+    document.getElementById("items-4").innerText = itemTotals[4] + '/' + ITEMS.length;
+    document.getElementById("items-5").innerText = itemTotals[5] + '/' + ITEMS.length;
 
     //gems
-    document.getElementById("gems-0").innerText = gemTotals[0] + '/' + gemNames.length;
-    document.getElementById("gems-1").innerText = gemTotals[1] + '/' + gemNames.length;
-    document.getElementById("gems-2").innerText = gemTotals[2] + '/' + gemNames.length;
-    document.getElementById("gems-3").innerText = gemTotals[3] + '/' + gemNames.length;
-    document.getElementById("gems-4").innerText = gemTotals[4] + '/' + gemNames.length;
-    document.getElementById("gems-5").innerText = gemTotals[5] + '/' + gemNames.length;
+    document.getElementById("gems-0").innerText = gemTotals[0] + '/' + GEMS.length;
+    document.getElementById("gems-1").innerText = gemTotals[1] + '/' + GEMS.length;
+    document.getElementById("gems-2").innerText = gemTotals[2] + '/' + GEMS.length;
+    document.getElementById("gems-3").innerText = gemTotals[3] + '/' + GEMS.length;
+    document.getElementById("gems-4").innerText = gemTotals[4] + '/' + GEMS.length;
+    document.getElementById("gems-5").innerText = gemTotals[5] + '/' + GEMS.length;
 
 
 
@@ -1131,17 +579,39 @@ function generateDifficulties() {
 
 }
 
-function generateItems() {
-    //todo: sort
-    //todo: real names
-    //todo: include gemless entries?
+function generateItems(sortType) {
+    itemsArray.sort((a, b) => {
+        return a.id - b.id;
+    });
+    if(sortType) {
+        const SORTS = ["", "id", "name", "seen", "held", "cute", "normal", "hard", "lunar"];
+        if(sortType > SORTS.length) {
+            console.error("attempted to sort by out of bounds value");
+        }
+        else {
+            let checkVar = SORTS[sortType];
+            let sortMult = 1;
+            if(sortType == prevSortTypes.items) {
+                sortMult = -1;
+                prevSortTypes.items = -sortType;
+            }
+            else
+                prevSortTypes.items = sortType;
+
+            itemsArray.sort((a, b) => {
+                return sortMult * (a[checkVar] > b[checkVar] ? 1 : -1);
+            });
+        }
+    }
+
     let itemsElem = document.getElementById("item-grid");
     let itemsChildren = itemsElem.children;
     while(itemsChildren.length > 7)
         itemsChildren[7].remove();
 
-    for(let i in ITEMS) {
-        if(i && !(i % 8)) {
+    for(let i in itemsArray) {
+        // add a gap every 8 if sorted by default
+        if((!sortType || sortType == 1) && i && !(i % 8)) {
             for(let j = 0; j < 7; j++) {
                 let fillElem = document.createElement("div");
                 fillElem.setAttribute("style", "height: 0.5em");
@@ -1150,8 +620,8 @@ function generateItems() {
         }
 
         let labelElem = document.createElement("div");
-        if(vals["ItemDiscovery"][ITEMS[i].key]) {
-            labelElem.innerText = ITEMS[i].name;
+        if(vals["ItemDiscovery"][itemsArray[i].key]) {
+            labelElem.innerText = itemsArray[i].name;
         }
         else
             labelElem.innerText = "Undiscovered Item";
@@ -1164,23 +634,51 @@ function generateItems() {
         
         for(let j = 0; j < 6; j++) {
             let valElem = document.createElement("div");
-            valElem.innerText = (vals["ItemDiscovery"][ITEMS[i].key] & Math.pow(2, j)) > 0 ? "X" : "";
+            valElem.innerText = (vals["ItemDiscovery"][itemsArray[i].key] & Math.pow(2, j)) > 0 ? "X" : "";
             
             if(i%2) valElem.classList.add("odd");
             else valElem.classList.add("even");
             itemsElem.appendChild(valElem);
         }
     }
-    
+}
+
+function generateGems (sortType) {
+    gemsArray.sort((a, b) => {
+        return a.id - b.id;
+    });
+    if(sortType) {
+        const SORTS = ["", "id", "key", "seen", "held", "cute", "normal", "hard", "lunar"];
+        if(sortType > SORTS.length) {
+            console.error("attempted to sort by out of bounds value");
+        }
+        else {
+            let checkVar = SORTS[sortType];
+            let sortMult = 1;
+            if(sortType == prevSortTypes.gems) {
+                sortMult = -1;
+                prevSortTypes.gems = -sortType;
+            }
+            else
+                prevSortTypes.gems = sortType;
+
+            gemsArray.sort((a, b) => {
+                return sortMult * (a[checkVar] > b[checkVar] ? 1 : -1);
+            });
+        }
+    }
+
     let gemsElem = document.getElementById("gems-grid");
     let gemschildren = gemsElem.children;
     while(gemschildren.length > 7)
         gemschildren[7].remove();
 
     let cId = -1;
-    for(let i in GEMS) {
-        if(cId != GEMS[i].cId) {
-            cId = GEMS[i].cId;
+    for(let i in gemsArray) {
+
+        // add a character label if this is a different char
+        if(cId != gemsArray[i].cId) {
+            cId = gemsArray[i].cId;
             let styleString = `background:${RABBITS[cId].color};`;
             let charElem = document.createElement("div");
             charElem.setAttribute("style", styleString);
@@ -1192,18 +690,9 @@ function generateItems() {
                 gemsElem.appendChild(fillerElem);
             }
         }
-        let labelElem = document.createElement("div");
-        if(GEMS[i].type > 0) labelElem.innerText = GEMTYPES[GEMS[i].type];
-        else {
-            
-            for(let j = 0; j < 7; j++) {
-                let fillElem = document.createElement("div");
-                fillElem.setAttribute("style", "height: 0.5em");
-                gemsElem.appendChild(fillElem);
-            }
-            labelElem.innerText = ABILITIES[GEMS[i].slot];
 
-        }
+        let labelElem = document.createElement("div");
+        labelElem.innerText = `${GEMTYPESCAPS[gemsArray[i].type]} ${ABILITIES[gemsArray[i].slot]}`;
 
         if(i%2) labelElem.classList.add("odd");
         else labelElem.classList.add("even");
@@ -1214,10 +703,10 @@ function generateItems() {
         
         for(let j = 0; j < 6; j++) {
             let valElem = document.createElement("div");
-            if(GEMS[i].type == 0 && j < 2) valElem.innerText = '-';
+            if(gemsArray[i].type == 0 && j < 2)
+                valElem.innerText = '-';
             else
-                valElem.innerText = (vals["ItemDiscovery"][GEMS[i].key] & Math.pow(2, j)) > 0 ? "X" : ""
-            
+                valElem.innerText = (vals["ItemDiscovery"][gemsArray[i].key] & Math.pow(2, j)) > 0 ? "X" : ""
 
             if(i%2) valElem.classList.add("odd");
             else valElem.classList.add("even");
