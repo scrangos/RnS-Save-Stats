@@ -278,7 +278,6 @@ function processRabbits() {
                             || vals["AllyWinTime"][i] < rabbitStats[j].FastestOnlineTime)) {
                         rabbitStats[j].FastestOnlineTime = vals["AllyWinTime"][i];
                         rabbitStats[j].FastestOnlineDiff = diff;
-                        console.log(`new fastest online ${rabbitNames[j]}: ${msToString(vals["AllyWinTime"][i])}`);
                     }
                 }
             }
@@ -598,13 +597,27 @@ function generateSummary() {
     document.getElementById("shopratio-1").innerText = (shopRatio0).toFixed(2);
     document.getElementById("shopratio-2").innerText = (shopRatio1).toFixed(2);
 
-    
-    document.getElementById("fastest0-1").innerText = fastestWins[0].class + ': ' + msToString(fastestWins[0].FastestOfflineTime);
-    document.getElementById("fastest0-2").innerText = fastestWins[1].class + ': ' + msToString(fastestWins[1].FastestOnlineTime);
+    let fastest0 = fastestWins[0].FastestOfflineTime;
+    if(!fastest0 || fastest0 == NEVER) fastest0 = '-';
+    else fastest0 = fastestWins[0].class + ': ' + msToString(fastest0);
+    let fastest1 = fastestWins[1].FastestOnlineTime;
+    if(!fastest1 || fastest1 == NEVER) fastest1 = '-';
+    else fastest1 = fastestWins[1].class + ': ' + msToString(fastest1);
+    document.getElementById("fastest0-1").innerText = fastest0
+    document.getElementById("fastest0-2").innerText = fastest1;
 
-    document.getElementById("winnest0-0").innerText = mostWins[0].class + ': ' + mostWins[0].TotalWins;
-    document.getElementById("winnest0-1").innerText = mostWins[1].class + ': ' + mostWins[1].OfflineWins;
-    document.getElementById("winnest0-2").innerText = mostWins[2].class + ': ' + mostWins[2].OnlineWins;
+    let winnest0 = mostWins[0].TotalWins,
+        winnest1 = mostWins[1].OfflineWins,
+        winnest2 = mostWins[2].OnlineWins;
+    if(!winnest0) winnest0 = '-';
+    else winnest0 = mostWins[0].class + ': ' + mostWins[0].TotalWins;
+    if(!winnest1) winnest1 = '-';
+    else winnest1 = mostWins[1].class + ': ' + mostWins[1].OfflineWins;
+    if(!winnest2) winnest2 = '-';
+    else winnest2 = mostWins[2].class + ': ' + mostWins[2].OnlineWins;
+    document.getElementById("winnest0-0").innerText = winnest0;
+    document.getElementById("winnest0-1").innerText = winnest1
+    document.getElementById("winnest0-2").innerText = winnest2;
 
     
     document.getElementById("kingdomattempts-0").innerText = vals["SaveInfo"]["mapVisitOutskirtsC"];
@@ -685,9 +698,12 @@ function generateRabbits() {
     rabbitStats.sort((a, b) => {return a.id - b.id});
 
     for(let i in rabbitStats) {
+
+        // skip if this rabbit hasn't been used before
         let rKey = RABBITS[rabbitStats[i].id].key;
         if(RABBITS[rabbitStats[i].id].itemKey) rKey = RABBITS[rabbitStats[i].id].itemKey;
-        if(vals.ItemDiscovery[`mv_${rKey}_0`] <= 0) continue;
+        let rKeyVal = vals.ItemDiscovery[`mv_${rKey}_0`];
+        if(!rKeyVal || rKeyVal <= 0) continue;
 
         let rabbitCont = document.createElement("div");
         let color = blendColor(RABBITS[rabbitStats[i].id].color, "#FFFFFF", 1, 4);
@@ -729,7 +745,12 @@ function generateRabbits() {
         gridElem.appendChild(elem);
         for(let j in diffs) {
             elem = document.createElement("div");
-            elem.innerText = rabbitStats[i][`Offline${diffs[j]}Count`] + rabbitStats[i][`Online${diffs[j]}Count`];
+            let total = 0;
+            let v1 = rabbitStats[i][`Offline${diffs[j]}Count`];
+            let v2 = rabbitStats[i][`Online${diffs[j]}Count`];
+            if(v1) total += v1;
+            if(v2) total += v2;
+            elem.innerText = total;
             gridElem.appendChild(elem);
         }
         elem = document.createElement("div");
@@ -743,7 +764,10 @@ function generateRabbits() {
         gridElem.appendChild(elem);
         for(let j in diffs) {
             elem = document.createElement("div");
-            elem.innerText = rabbitStats[i][`Offline${diffs[j]}Count`];
+            let total = 0;
+            if(rabbitStats[i][`Offline${diffs[j]}Count`])
+                total = rabbitStats[i][`Offline${diffs[j]}Count`];
+            elem.innerText = total;
             gridElem.appendChild(elem);
         }
         elem = document.createElement("div");
@@ -757,7 +781,10 @@ function generateRabbits() {
         gridElem.appendChild(elem);
         for(let j in diffs) {
             elem = document.createElement("div");
-            elem.innerText = rabbitStats[i][`Online${diffs[j]}Count`];
+            let total = 0;
+            if(rabbitStats[i][`Online${diffs[j]}Count`])
+                total = rabbitStats[i][`Online${diffs[j]}Count`];
+            elem.innerText = total;
             gridElem.appendChild(elem);
         }
         elem = document.createElement("div");
@@ -879,9 +906,12 @@ function generateWinLoss() {
     for(let i in diffs) {
         let attempts = vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`] + vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
         let wins = vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`] + vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+        let ratio = '-';
+        if(attempts) ratio = (wins / attempts * 100).toFixed(1) + '%';
+        if(!attempts && !wins) wins = '-';
         document.getElementById(`wl-attempts-${i}`).innerText = attempts;
         document.getElementById(`wl-wins-${i}`).innerText = wins;
-        document.getElementById(`wl-ratio-${i}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+        document.getElementById(`wl-ratio-${i}`).innerText = ratio;
         
         //fastest
         rabbitStats.sort((a, b) => {
@@ -891,7 +921,7 @@ function generateWinLoss() {
         });
         let t = getMinIfNotZero(rabbitStats[0][`Offline${diffs[i]}Fastest`], rabbitStats[0][`Online${diffs[i]}Fastest`]);
         let str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-        if(t == 0) str = '-';
+        if(t == 0 || !t) str = '-';
         document.getElementById(`wl-fastest-${i}`).innerHTML = str;
         
         //fastest0
@@ -900,7 +930,7 @@ function generateWinLoss() {
         });
         t = rabbitStats[0][`Offline${diffs[i]}Fastest`];
         str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-        if(t == 0) str = '-';
+        if(t == 0 || !t) str = '-';
         document.getElementById(`wl-fastest0-${i}`).innerHTML = str;
 
         //fastest1
@@ -909,7 +939,7 @@ function generateWinLoss() {
         });
         t = rabbitStats[0][`Online${diffs[i]}Fastest`];
         str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-        if(t == 0) str = '-';
+        if(t == 0 || !t) str = '-';
         document.getElementById(`wl-fastest1-${i}`).innerHTML = str;
         
         //winnest
@@ -920,7 +950,7 @@ function generateWinLoss() {
         });
         t = rabbitStats[0][`Offline${diffs[i]}Count`] + rabbitStats[0][`Online${diffs[i]}Count`];
         str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-        if(t == 0) str = '-';
+        if(t == 0 || !t) str = '-';
         document.getElementById(`wl-winnest-${i}`).innerHTML = str;
 
         //winnest0
@@ -931,7 +961,7 @@ function generateWinLoss() {
         });
         t = rabbitStats[0][`Offline${diffs[i]}Count`];
         str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-        if(t == 0) str = '-';
+        if(t == 0 || !t) str = '-';
         document.getElementById(`wl-winnest0-${i}`).innerHTML = str;
 
         //winnest1
@@ -942,21 +972,27 @@ function generateWinLoss() {
         });
         t = rabbitStats[0][`Online${diffs[i]}Count`];
         str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-        if(t == 0) str = '-';
+        if(t == 0 || !t) str = '-';
         document.getElementById(`wl-winnest1-${i}`).innerHTML = str;
 
         //kingdom
         attempts = vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`];
         wins = vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
+        ratio = '-';
+        if(attempts) ratio = (wins / attempts * 100).toFixed(1) + '%';
+        if(!attempts && !wins) wins = '-';
         document.getElementById(`wl-kingdom-attempts-${i}`).innerText = attempts;
         document.getElementById (`wl-kingdom-wins-${i}`).innerText = wins;
-        document.getElementById(`wl-kingdom-ratio-${i}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+        document.getElementById(`wl-kingdom-ratio-${i}`).innerText = ratio;
         //extra
         attempts = vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
         wins = vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+        ratio = '-';
+        if(attempts) ratio = (wins / attempts * 100).toFixed(1) + '%';
+        if(!attempts && !wins) wins = '-';
         document.getElementById(`wl-extra-attempts-${i}`).innerText = attempts;
         document.getElementById(`wl-extra-wins-${i}`).innerText = wins;
-        document.getElementById(`wl-extra-ratio-${i}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+        document.getElementById(`wl-extra-ratio-${i}`).innerText = ratio;
         //true random
         //todo
         //chaotic random
@@ -1023,9 +1059,12 @@ function generateWinLoss() {
     //total
     let attempts = outskirtVisits + geodeVisits;
     let wins = keepWins + loopWins;
+    ratio = '-';
+    if(attempts) ratio = (wins / attempts * 100).toFixed(1) + '%';
+    if(!attempts && !wins) wins = '-';
     document.getElementById(`wl-attempts-${4}`).innerText = attempts;
     document.getElementById(`wl-wins-${4}`).innerText = wins;
-    document.getElementById(`wl-ratio-${4}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+    document.getElementById(`wl-ratio-${4}`).innerText = ratio;
     
     //fastest
     rabbitStats.sort((a, b) => {
@@ -1033,7 +1072,7 @@ function generateWinLoss() {
     });
     let t = rabbitStats[0][`FastestWinTime`];
     let str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-    if(t == 0) str = '-';
+    if(t == 0 || !t || t == NEVER) str = '-';
     document.getElementById(`wl-fastest-${4}`).innerHTML = str;
     
     //fastest0
@@ -1042,7 +1081,7 @@ function generateWinLoss() {
     });
     t = rabbitStats[0][`FastestOfflineTime`];
     str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-    if(t == 0) str = '-';
+    if(t == 0 || !t || t == NEVER) str = '-';
     document.getElementById(`wl-fastest0-${4}`).innerHTML = str;
 
     //fastest1
@@ -1051,7 +1090,7 @@ function generateWinLoss() {
     });
     t = rabbitStats[0][`FastestOnlineTime`];
     str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-    if(t == 0) str = '-';
+    if(t == 0 || !t || t == NEVER) str = '-';
     document.getElementById(`wl-fastest1-${4}`).innerHTML = str;
     
     //winnest
@@ -1060,7 +1099,7 @@ function generateWinLoss() {
     });
     t = rabbitStats[0][`TotalWins`];
     str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-    if(t == 0) str = '-';
+    if(t == 0 || !t) str = '-';
     document.getElementById(`wl-winnest-${4}`).innerHTML = str;
 
     //winnest0
@@ -1069,7 +1108,7 @@ function generateWinLoss() {
     });
     t = rabbitStats[0][`OfflineWins`];
     str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-    if(t == 0) str = '-';
+    if(t == 0 || !t) str = '-';
     document.getElementById(`wl-winnest0-${4}`).innerHTML = str;
 
     //winnest1
@@ -1078,21 +1117,27 @@ function generateWinLoss() {
     });
     t = rabbitStats[0][`OnlineWins`];
     str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-    if(t == 0) str = '-';
+    if(t == 0 || !t) str = '-';
     document.getElementById(`wl-winnest1-${4}`).innerHTML = str;
 
     //kingdom
     attempts = outskirtVisits;
     wins = keepWins;
+    ratio = '-';
+    if(attempts) ratio = (wins / attempts * 100).toFixed(1) + '%';
+    if(!attempts && !wins) wins = '-';
     document.getElementById(`wl-kingdom-attempts-${4}`).innerText = attempts;
     document.getElementById (`wl-kingdom-wins-${4}`).innerText = wins;
-    document.getElementById(`wl-kingdom-ratio-${4}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+    document.getElementById(`wl-kingdom-ratio-${4}`).innerText = ratio;
     //extra
     attempts = geodeVisits;
     wins = loopWins;
+    ratio = '-';
+    if(attempts) ratio = (wins / attempts * 100).toFixed(1) + '%';
+    if(!attempts && !wins) wins = '-';
     document.getElementById(`wl-extra-attempts-${4}`).innerText = attempts;
     document.getElementById(`wl-extra-wins-${4}`).innerText = wins;
-    document.getElementById(`wl-extra-ratio-${4}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+    document.getElementById(`wl-extra-ratio-${4}`).innerText = ratio;
     //true random
     //todo
     //chaotic random
@@ -1172,15 +1217,18 @@ function generateItems(sortType) {
     while(itemsChildren.length > 7)
         itemsChildren[7].remove();
 
+    let prevSet = 0;
     for(let i in itemsArray) {
-        // add a gap every 8 if sorted by default
-        if((!sortType || sortType == 1) && i && !(i % 8)) {
+        // add a gap between sets if default sorting
+        let curSet = Math.floor(itemsArray[i].id / 8);
+        if((!sortType || sortType == 1) && prevSet != curSet) {
             for(let j = 0; j < 7; j++) {
                 let fillElem = document.createElement("div");
                 fillElem.setAttribute("style", "height: 0.5em");
                 itemsElem.appendChild(fillElem);
             }
         }
+        prevSet = curSet;
 
         let labelElem = document.createElement("div");
         if(vals["ItemDiscovery"][itemsArray[i].key]) {
@@ -1189,9 +1237,14 @@ function generateItems(sortType) {
         else
             labelElem.innerText = "Undiscovered Item";
 
-        if(i%2) labelElem.classList.add("odd");
-        else labelElem.classList.add("even");
+        let color = SETS[curSet].color;
+        if(i % 2 && SETS[curSet].color2) color = SETS[curSet].color2;
+        if(i % 2) color = blendColor(color, "#FFFFFF", 1, 4);
+        else color = blendColor(color, "#FFFFFF", 1, 8);
+        let styleString = `background: ${color}`;
+
         labelElem.classList.add("grid-left");
+        labelElem.setAttribute("style", styleString);
 
         itemsElem.appendChild(labelElem);
         
@@ -1199,8 +1252,7 @@ function generateItems(sortType) {
             let valElem = document.createElement("div");
             valElem.innerText = (vals["ItemDiscovery"][itemsArray[i].key] & Math.pow(2, j)) > 0 ? "X" : "";
             
-            if(i%2) valElem.classList.add("odd");
-            else valElem.classList.add("even");
+            valElem.setAttribute("style", styleString);
             itemsElem.appendChild(valElem);
         }
     }

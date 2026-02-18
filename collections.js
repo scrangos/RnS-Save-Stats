@@ -1515,6 +1515,185 @@ const ABILITIES = [
     "Primary", "Secondary", "Special", "Defensive"
 ];
 
+const SETS = [
+    {
+        id: "0",
+        name: "Arcane",
+        color: "#7536FF"
+    },
+    {
+        id: "1",
+        name: "Night",
+        color: "#938CFF"
+    },
+    {
+        id: "2",
+        name: "Timespace",
+        color: "#646AFF"
+    },
+    {
+        id: "3",
+        name: "Wind",
+        color: "#ABFFFC"
+    },
+    {
+        id: "4",
+        name: "Bloodwolf",
+        color: "#388AF6"
+    },
+    {
+        id: "5",
+        name: "Assassin",
+        color: "#3360FF"
+    },
+    {
+        id: "6",
+        name: "Rockdragon",
+        color: "#EF405C"
+    },
+    {
+        id: "7",
+        name: "Flame",
+        color: "#FF3333"
+    },
+    {
+        id: "8",
+        name: "Gem",
+        color: "#FF89BE"
+    },
+    {
+        id: "9",
+        name: "Lightning",
+        color: "#FFE496"
+    },
+    {
+        id: "10",
+        name: "Shrine",
+        color: "#FFAD60"
+    },
+    {
+        id: "11",
+        name: "Lucky",
+        color: "#FFF6BF"
+    },
+    {
+        id: "12",
+        name: "Life",
+        color: "#C1FF8D"
+    },
+    {
+        id: "13",
+        name: "Poison",
+        color: "#4DFB84"
+    },
+    {
+        id: "14",
+        name: "Depth",
+        color: "#43FAB7"
+    },
+    {
+        id: "15",
+        name: "Darkbite",
+        color: "#492F85"
+    },
+    {
+        id: "16",
+        name: "Timegem",
+        color: "#573FFF"
+    },
+    {
+        id: "17",
+        name: "Youkai",
+        color: "#665B66"
+    },
+    {
+        id: "18",
+        name: "Haunted",
+        color: "#89F9DC"
+    },
+    {
+        id: "19",
+        name: "Gladiator",
+        color: "#4C4443"
+    },
+    {
+        id: "20",
+        name: "Sparkblade",
+        color: "#2A2D44"
+    },
+    {
+        id: "21",
+        name: "Swiftflight",
+        color: "#D1F3F3"
+    },
+    {
+        id: "22",
+        name: "Sacredflame",
+        color: "#ED9179"
+    },
+    {
+        id: "23",
+        name: "Ruins",
+        color: "#7AC09A"
+    },
+    {
+        id: "24",
+        name: "Lakeshrine",
+        color: "#4CA598"
+    },
+    {
+        id: "25",
+        name: "Glacier",
+        color: "#"
+    },
+    {
+        id: "26",
+        name: "Memory",
+        color: "#F05797"
+    },
+    {
+        id: "27",
+        name: "Cultist",
+        color: "#8146EF"
+    },
+    {
+        id: "28",
+        name: "Painters",
+        color: "#D8E2D6"
+    },
+    {
+        id: "29",
+        name: "Daynight",
+        color: "#FF7D98",
+        color2: "#4863FA"
+    },
+    {
+        id: "30",
+        name: "Sharpedge",
+        color: "#3E3E4C"
+    },
+    {
+        id: "31",
+        name: "Oceans",
+        color: "#68FFE7"
+    },
+    {
+        id: "32",
+        name: "Performers",
+        color: "#FFE5BC"
+    },
+    {
+        id: "33",
+        name: "Miners",
+        color: "#76C490"
+    },
+    {
+        id: "34",
+        name: "Teaparty",
+        color: "#EAFF90"
+    }
+];
+
 const GEMS = [
 ];
 
