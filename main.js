@@ -793,7 +793,7 @@ function generateRabbits() {
         for(let j in diffs) {
             elem = document.createElement("div");
             elem.classList.add("grid-top");
-            elem.innerText = diffs[j];
+            elem.innerHTML = diffs[j] + "<br>Cleared";
             gridElem.appendChild(elem);
         }
 
