@@ -27,8 +27,64 @@ const types = [
     "Offline", "Online"
 ];
 
+const wlLabels = [
+    [
+        "Total Attempts", "Total Wins", "Win Ratio",
+        "Fastest Win (offline)", "Fastest Win (online)",
+        "Most Wins", "Most Wins (offline)", "Most Wins (online)"
+    ],
+    [
+        "Kingdom Attempts", "Kingdom Wins", "Kingdom Win Ratio",
+        "Extra Attempts", "Extra Wins", "Extra Win Ratio"
+    ],
+    [
+        "Outskirts Attempts", "Outskirts Wins", "Outskirts Win Ratio",
+        "Nest Attempts", "Nest Wins", "Nest Win Ratio",
+        "Arsenal Attempts", "Arsenal Wins", "Arsenal Win Ratio",
+        "Darkhouse Attempts", "Darkhouse Wins", "Darkhouse Win Ratio",
+        "Churchmouse Attempts", "Churchmouse Wins", "Churchmouse Win Ratio",
+        "Lakeside Attempts", "Lakeside Wins", "Lakeside Win Ratio",
+        "Pale Keep Attempts", "Pale Keep Wins", "Pale Keep Win Ratio"
+    ],
+    [
+        "Geode Attempts", "Geode Wins", "Geode Win Ratio",
+        "Depths Attempts", "Depths Wins", "Depths Win Ratio",
+        "Aurum Attempts", "Aurum Wins", "Aurum Win Ratio",
+        "Sanctum Attempts", "Sanctum Wins", "Sanctum Win Ratio",
+        "Hallway Attempts", "Hallway Wins", "Hallway Win Ratio"
+    ]
+];
+const wlIds = [
+    [
+        "wl-attempts", "wl-wins", "wl-ratio",
+        "wl-fastest0", "wl-fastest1",
+        "wl-winnest", "wl-winnest0", "wl-winnest1"
+    ],
+    [
+        "wl-kingdom-attempts", "wl-kingdom-wins", "wl-kingdom-ratio",
+        "wl-extra-attempts", "wl-extra-wins", "wl-extra-ratio"
+    ],
+    [
+        "wl-outskirts-attempts", "wl-outskirts-wins", "wl-outskirts-ratio",
+        "wl-nest-attempts", "wl-nest-wins", "wl-nest-ratio",
+        "wl-arsenal-attempts", "wl-arsenal-wins", "wl-arsenal-ratio",
+        "wl-darkhouse-attempts", "wl-darkhouse-wins", "wl-darkhouse-ratio",
+        "wl-churchmouse-attempts", "wl-churchmouse-wins", "wl-churchmouse-ratio",
+        "wl-lakeside-attempts", "wl-lakeside-wins", "wl-lakeside-ratio",
+        "wl-keep-attempts", "wl-keep-wins", "wl-keep-ratio"
+    ],
+    [
+        "wl-geode-attempts", "wl-geode-wins", "wl-geode-ratio",
+        "wl-depths-attempts", "wl-depths-wins", "wl-depths-ratio",
+        "wl-aurum-attempts", "wl-aurum-wins", "wl-aurum-ratio",
+        "wl-sanctum-attempts", "wl-sanctum-wins", "wl-sanctum-ratio",
+        "wl-hallway-attempts", "wl-hallway-wins", "wl-hallway-ratio"
+    ]
+];
+
 function init() {
     currentTab = 0;
+    buildWLTables();
 
     // handle dragging files in
     window.addEventListener("drop", (e) => { //process drag&drop behavior
@@ -51,6 +107,49 @@ function init() {
 
 init();
 
+function buildWLTables() {
+    let gridElem = document.getElementById("wl-grid");
+
+    //heading
+    let elem = document.createElement("div");
+    elem.classList.add("grid-top");
+    gridElem.appendChild(elem);
+    for(let i in diffs) {
+        elem = document.createElement("div");
+        elem.classList.add("grid-top");
+        elem.innerText = diffs[i];
+        gridElem.appendChild(elem);
+    }
+    elem = document.createElement("div");
+    elem.classList.add("grid-top");
+    elem.innerText = "Total";
+    gridElem.appendChild(elem);
+
+
+
+    for(let i in wlLabels) {
+        for(let j in wlLabels[i]) {
+            elem = document.createElement("div");
+            elem.classList.add("grid-left");
+            elem.innerText = wlLabels[i][j];
+            gridElem.appendChild(elem);
+            
+            for(let k = 0; k < 5; k++) {
+                elem = document.createElement("div");
+                elem.innerText = '-';
+                elem.setAttribute("id", wlIds[i][j] + '-' + k);
+                gridElem.appendChild(elem);
+            }
+        }
+        
+        elem = document.createElement("div");
+        elem.classList.add("fullrow");
+        gridElem.appendChild(elem);
+    }
+
+
+}
+
 function test() {
     console.log(fileText.indexOf('\n'));
     parseVals();
@@ -62,7 +161,6 @@ function changeTab (index) {
     document.getElementById(`tab-${index}`).classList.add("active");
     currentTab = index;
 }
-
 
 function handleUpload(file) {
     if(!file) {
@@ -85,8 +183,8 @@ function handleUpload(file) {
         processItems();
 
         generateSummary();
-        generateClasses();
-        generateDifficulties();
+        generateRabbits();
+        generateWinLoss();
         generateItems();
         generateGems();
         generateRaw();
@@ -241,14 +339,18 @@ function processItems() {
                 hard: hard,
                 lunar: lunar
             });
-            if(seen) gemTotals[0]++;
-            if(held) gemTotals[1]++;
+            if(seen && GEMS[i].type > 0) gemTotals[0]++;
+            if(held && GEMS[i].type > 0) gemTotals[1]++;
             if(cute) gemTotals[2]++;
             if(normal) gemTotals[3]++;
             if(hard) gemTotals[4]++;
             if(lunar) gemTotals[5]++;
         }
     }
+}
+
+function processLocations() {
+
 }
 
 function saveStats () {
@@ -556,8 +658,8 @@ function generateSummary() {
     document.getElementById("items-5").innerText = itemTotals[5] + '/' + ITEMS.length;
 
     //gems
-    document.getElementById("gems-0").innerText = gemTotals[0] + '/' + GEMS.length;
-    document.getElementById("gems-1").innerText = gemTotals[1] + '/' + GEMS.length;
+    document.getElementById("gems-0").innerText = gemTotals[0] + '/' + (GEMS.length - RABBITS.length * 4);
+    document.getElementById("gems-1").innerText = gemTotals[1] + '/' + (GEMS.length - RABBITS.length * 4);
     document.getElementById("gems-2").innerText = gemTotals[2] + '/' + GEMS.length;
     document.getElementById("gems-3").innerText = gemTotals[3] + '/' + GEMS.length;
     document.getElementById("gems-4").innerText = gemTotals[4] + '/' + GEMS.length;
@@ -571,12 +673,308 @@ function generateSummary() {
 
 }
 
-function generateClasses() {
+function generateRabbits() {
+    let rabbitsElem = document.getElementById("rabbits-content");
+    while(rabbitsElem.hasChildNodes())
+        rabbitsElem.firstChild.remove();
 
+    // overview, with a pie graph of rabbits by win count
+    // leaderboard/bar graph of fastest rabbits
+
+    rabbitStats.sort((a, b) => {return a.id - b.id});
+
+    for(let i in rabbitStats) {
+        //todo: skip if character is undiscovered
+
+        let rabbitCont = document.createElement("div");
+        let color = blendColor(RABBITS[rabbitStats[i].id].color, "#FFFFFF", 1, 4);
+        let styleString = `background: ${color}`;
+        rabbitCont.setAttribute("style", styleString);
+        rabbitCont.classList.add("box");
+
+        let titleElem = document.createElement("div");
+        titleElem.classList.add("title");
+        titleElem.textContent = RABBITS[rabbitStats[i].id].name;
+
+        rabbitCont.appendChild(titleElem);
+
+        //per rabbit: 
+        let gridElem = document.createElement("div");
+        gridElem.classList.add("grid");
+        gridElem.classList.add("grid-5");
+
+        // headings
+        let elem = document.createElement("div");
+        elem.classList.add("grid-top");
+        elem.innerText = "";
+        gridElem.appendChild(elem);
+        for(let j in diffs) {
+            elem = document.createElement("div");
+            elem.classList.add("grid-top");
+            elem.innerText = diffs[j];
+            gridElem.appendChild(elem);
+        }
+        elem = document.createElement("div");
+        elem.classList.add("grid-top");
+        elem.innerText = "Total";
+        gridElem.appendChild(elem);
+
+        // total clears
+        elem = document.createElement("div");
+        elem.classList.add("grid-left");
+        elem.innerText = "Total Clears";
+        gridElem.appendChild(elem);
+        for(let j in diffs) {
+            elem = document.createElement("div");
+            elem.innerText = rabbitStats[i][`Offline${diffs[j]}Count`] + rabbitStats[i][`Online${diffs[j]}Count`];
+            gridElem.appendChild(elem);
+        }
+        elem = document.createElement("div");
+        elem.innerText = rabbitStats[i].TotalWins;
+        gridElem.appendChild(elem);
+
+        // offline clears
+        elem = document.createElement("div");
+        elem.classList.add("grid-left");
+        elem.innerText = "Offline Clears";
+        gridElem.appendChild(elem);
+        for(let j in diffs) {
+            elem = document.createElement("div");
+            elem.innerText = rabbitStats[i][`Offline${diffs[j]}Count`];
+            gridElem.appendChild(elem);
+        }
+        elem = document.createElement("div");
+        elem.innerText = rabbitStats[i].OfflineWins;
+        gridElem.appendChild(elem);
+
+        // online clears
+        elem = document.createElement("div");
+        elem.classList.add("grid-left");
+        elem.innerText = "Online Clears";
+        gridElem.appendChild(elem);
+        for(let j in diffs) {
+            elem = document.createElement("div");
+            elem.innerText = rabbitStats[i][`Online${diffs[j]}Count`];
+            gridElem.appendChild(elem);
+        }
+        elem = document.createElement("div");
+        elem.innerText = rabbitStats[i].OnlineWins;
+        gridElem.appendChild(elem);
+
+        // offline fastest
+        elem = document.createElement("div");
+        elem.classList.add("grid-left");
+        elem.innerText = "Offline Fastest";
+        gridElem.appendChild(elem);
+        for(let j in diffs) {
+            elem = document.createElement("div");
+            let t = rabbitStats[i][`Offline${diffs[j]}Fastest`];
+            if(t) elem.innerText = msToString(t);
+            else elem.innerText = '-';
+            gridElem.appendChild(elem);
+        }
+        elem = document.createElement("div");
+        elem.innerText = msToString(rabbitStats[i].FastestOfflineTime);
+        gridElem.appendChild(elem);
+
+        // online fastest
+        elem = document.createElement("div");
+        elem.classList.add("grid-left");
+        elem.innerText = "Online Fastest";
+        gridElem.appendChild(elem);
+        for(let j in diffs) {
+            elem = document.createElement("div");
+            let t = rabbitStats[i][`Online${diffs[j]}Fastest`];
+            if(t) elem.innerText = msToString(t);
+            else elem.innerText = '-';
+            gridElem.appendChild(elem);
+        }
+        elem = document.createElement("div");
+        elem.innerText = msToString(rabbitStats[i].FastestOnlineTime);
+        gridElem.appendChild(elem);
+
+        rabbitCont.appendChild(gridElem);
+
+        rabbitCont.appendChild(document.createElement("br"));
+
+        let rabbitGems = [0, 0, 0, 0, 0, 0];
+        for(let j in gemsArray) {
+            let rName = RABBITS[rabbitStats[i].id].key;
+            if(RABBITS[rabbitStats[i].id].itemKey) rName = RABBITS[rabbitStats[i].id].itemKey;
+            if(gemsArray[j].key.includes(rName)) {
+                if(gemsArray[j].seen && gemsArray[j].type != 0) rabbitGems[0]++;
+                if(gemsArray[j].held && gemsArray[j].type != 0) rabbitGems[1]++;
+                if(gemsArray[j].cute) rabbitGems[2]++;
+                if(gemsArray[j].normal) rabbitGems[3]++;
+                if(gemsArray[j].hard) rabbitGems[4]++;
+                if(gemsArray[j].lunar) rabbitGems[5]++;
+            }
+        }
+
+        titleElem = document.createElement("div");
+        titleElem.classList.add("centered");
+        titleElem.textContent = "Gem Progress";
+
+        rabbitCont.appendChild(titleElem);
+
+        gridElem = document.createElement("div");
+        gridElem.classList.add("grid");
+        gridElem.classList.add("grid-5");
+
+        // headings
+        elem = document.createElement("div");
+        elem.classList.add("grid-top");
+        elem.innerText = "Seen";
+        gridElem.appendChild(elem);
+        elem = document.createElement("div");
+        elem.classList.add("grid-top");
+        elem.innerText = "Purchased";
+        gridElem.appendChild(elem);
+        for(let j in diffs) {
+            elem = document.createElement("div");
+            elem.classList.add("grid-top");
+            elem.innerText = diffs[j];
+            gridElem.appendChild(elem);
+        }
+
+        elem = document.createElement("div");
+        elem.innerText = `${rabbitGems[0]}/20`;
+        gridElem.appendChild(elem);
+        elem = document.createElement("div");
+        elem.innerText = `${rabbitGems[1]}/20`;
+        gridElem.appendChild(elem);
+        elem = document.createElement("div");
+        elem.innerText = `${rabbitGems[2]}/24`;
+        gridElem.appendChild(elem);
+        elem = document.createElement("div");
+        elem.innerText = `${rabbitGems[3]}/24`;
+        gridElem.appendChild(elem);
+        elem = document.createElement("div");
+        elem.innerText = `${rabbitGems[4]}/24`;
+        gridElem.appendChild(elem);
+        elem = document.createElement("div");
+        elem.innerText = `${rabbitGems[5]}/24`;
+        gridElem.appendChild(elem);
+
+        rabbitCont.appendChild(gridElem);
+
+        rabbitCont.appendChild(document.createElement("br"));
+
+        rabbitsElem.appendChild(rabbitCont);
+    }
 }
 
-function generateDifficulties() {
+function generateWinLoss() {
+    const diffChars = "CHNL";
 
+    for(let i in diffs) {
+        let attempts = vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`] + vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
+        let wins = vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`] + vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+        document.getElementById(`wl-attempts-${i}`).innerText = attempts;
+        document.getElementById(`wl-wins-${i}`).innerText = wins;
+        document.getElementById(`wl-ratio-${i}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+        //fastest0
+        //fastest1
+        //winnest
+        //winnest0
+        //winnest1
+
+        //kingdom
+        //extra
+        //true random
+        //chaotic random
+
+        let doLocMan = (id, attempts, wins) => {
+            let ratio = (wins / attempts * 100).toFixed(1) + '%';
+            if(!attempts || !(wins || wins == 0)) {
+                ratio = '-';
+                wins = '-';
+            }
+            if(!attempts && attempts != 0) attempts = '-';
+            document.getElementById(`wl-${id}-attempts-${i}`).innerText = attempts;
+            document.getElementById(`wl-${id}-wins-${i}`).innerText = wins;
+            document.getElementById(`wl-${id}-ratio-${i}`).innerText = ratio;
+        };
+        let doLoc = (id, key) => {
+            let attempts = vals.SaveInfo[`mapVisit${key}${diffChars[i]}`];
+            let wins = vals.SaveInfo[`mapWin${key}${diffChars[i]}`];
+            doLocMan(id, attempts, wins);
+        };
+
+        //no win count :c
+        doLocMan("outskirts", vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`]);
+        doLoc("nest", "Nest");
+        doLoc("arsenal", "Arsenal");
+        doLoc("darkhouse", "Lighthouse");
+        doLoc("churchmouse", "Streets");
+        doLoc("lakeside", "Lakeside");
+        //manual
+        let keepVisits = vals.SaveInfo[`mapVisitKeep${diffChars[i]}`];
+        let keepWins = vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
+        doLocMan("keep", keepVisits, keepWins);
+
+        //no win count :c
+        doLocMan("geode", vals.SaveInfo[`mapVisitGeode${diffChars[i]}`]);
+        doLoc("depths", "Depths");
+        doLoc("aurum", "Aurum");
+        doLoc("sanctum", "Sanct");
+        //manual
+        let loopVisits = vals.SaveInfo[`mapVisitDarkhall${diffChars[i]}`];
+        let loopWins = vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+        doLocMan("hallway", loopVisits, loopWins);
+    }
+
+    let doTotalLocMan = (id, attempts, wins) => {
+        let ratio = (wins / attempts * 100).toFixed(1) + '%';
+        if(!attempts || !(wins || wins == 0)) {
+            ratio = '-';
+            wins = '-';
+        }
+        if(!attempts && attempts != 0) attempts = '-';
+        document.getElementById(`wl-${id}-attempts-${4}`).innerText = attempts;
+        document.getElementById(`wl-${id}-wins-${4}`).innerText = wins;
+        document.getElementById(`wl-${id}-ratio-${4}`).innerText = ratio;
+
+    };
+    let doTotalLoc = (id, key) => {
+        let attempts = 0, wins = 0;
+        for(let i in diffs) {
+            attempts += vals.SaveInfo[`mapVisit${key}${diffChars[i]}`];
+            wins += vals.SaveInfo[`mapWin${key}${diffChars[i]}`];
+        }
+        doTotalLocMan(id, attempts, wins);
+    };
+    let outskirtVisits = 0;
+    let keepVisits = 0;
+    let keepWins = 0;
+    let geodeVisits = 0;
+    let loopVisits = 0;
+    let loopWins = 0;
+    for(let i in diffs) {
+        outskirtVisits += vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`];
+        keepVisits += vals.SaveInfo[`mapVisitKeep${diffChars[i]}`];
+        keepWins += vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
+        geodeVisits += vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
+        loopVisits += vals.SaveInfo[`mapVisitDarkhall${diffChars[i]}`];
+        loopWins += vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+    }
+    //no win count :c
+    doTotalLocMan("outskirts", outskirtVisits);
+    doTotalLoc("nest", "Nest");
+    doTotalLoc("arsenal", "Arsenal");
+    doTotalLoc("darkhouse", "Lighthouse");
+    doTotalLoc("churchmouse", "Streets");
+    doTotalLoc("lakeside", "Lakeside");
+    //manual
+    doTotalLocMan("keep", keepVisits, keepWins);
+
+    //no win count :c
+    doTotalLocMan("geode", geodeVisits);
+    doTotalLoc("depths", "Depths");
+    doTotalLoc("aurum", "Aurum");
+    doTotalLoc("sanctum", "Sanct");
+    //manual
+    doTotalLocMan("hallway", loopVisits, loopWins);
 }
 
 function generateItems(sortType) {
@@ -682,20 +1080,19 @@ function generateGems (sortType) {
             let styleString = `background:${RABBITS[cId].color};`;
             let charElem = document.createElement("div");
             charElem.setAttribute("style", styleString);
+            charElem.classList.add("fullrow");
             charElem.textContent = RABBITS[cId].name;
             gemsElem.appendChild(charElem);
-            for(let j = 0; j < 6; j++) {
-                let fillerElem = document.createElement("div");
-                fillerElem.setAttribute("style", styleString);
-                gemsElem.appendChild(fillerElem);
-            }
         }
 
-        let labelElem = document.createElement("div");
-        labelElem.innerText = `${GEMTYPESCAPS[gemsArray[i].type]} ${ABILITIES[gemsArray[i].slot]}`;
+        let c;
+        if(i % 2) c = blendColor(RABBITS[cId].color, "#FFFFFF", 1, 4);
+        else c = blendColor(RABBITS[cId].color, "#FFFFFF", 1, 16);
+        let styleString = `background:${c}`;
 
-        if(i%2) labelElem.classList.add("odd");
-        else labelElem.classList.add("even");
+        let labelElem = document.createElement("div");
+        labelElem.setAttribute("style", styleString);
+        labelElem.innerText = `${GEMTYPESCAPS[gemsArray[i].type]} ${ABILITIES[gemsArray[i].slot]}`;
 
         labelElem.classList.add("grid-left");
 
@@ -708,8 +1105,7 @@ function generateGems (sortType) {
             else
                 valElem.innerText = (vals["ItemDiscovery"][gemsArray[i].key] & Math.pow(2, j)) > 0 ? "X" : ""
 
-            if(i%2) valElem.classList.add("odd");
-            else valElem.classList.add("even");
+            valElem.setAttribute("style", styleString);
 
             gemsElem.appendChild(valElem);
         }
@@ -771,4 +1167,19 @@ function resolveNaN(num) {
     if(num != num)
         return 0;
     return num;
+}
+
+function blendColor(c1, c2, r1, r2) {
+    if(!r1) r1 = 1;
+    if(!r2) r2 = 1;
+    let red1 = parseInt(c1.substring(1, 3), 16),
+        red2 = parseInt(c2.substring(1, 3), 16),
+        green1 = parseInt(c1.substring(3, 5), 16),
+        green2 = parseInt(c2.substring(3, 5), 16),
+        blue1 = parseInt(c1.substring(5, 7), 16),
+        blue2 = parseInt(c2.substring(5, 7), 16);
+    let ret = '#' + Math.floor((red1 * r1 + red2 * r2) / (r1 + r2)).toString(16)
+         + Math.floor((green1 * r1 + green2 * r2) / (r1 + r2)).toString(16)
+         + Math.floor((blue1 * r1 + blue2 * r2) / (r1 + r2)).toString(16);
+    return ret;
 }

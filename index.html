@@ -27,8 +27,8 @@
 
     <div id="tabs">
         <button onclick="changeTab(0)">Summary</button>
-        <button disabled onclick="changeTab(1)">Rabbits</button>
-        <button disabled onclick="changeTab(2)">Difficulties</button>
+        <button onclick="changeTab(1)">Rabbits</button>
+        <button onclick="changeTab(2)">Win/Loss</button>
         <button onclick="changeTab(3)">Items & Upgrades</button>
         <button onclick="changeTab(4)">Raw View</button>
     </div>
@@ -130,33 +130,33 @@
                 <div class="title">Item Progress</div>
                 <div class="grid-1">
                     <div>Items Seen: </div>
-                    <div id="items-0">0/0</div>
+                    <div id="items-0">-</div>
                     <div>Items Picked Up: </div>
-                    <div id="items-1">0/0</div>
+                    <div id="items-1">-</div>
                     <div>Items Cleared Cute With: </div>
-                    <div id="items-2">0/0</div>
+                    <div id="items-2">-</div>
                     <div>Items Cleared Normal With: </div>
-                    <div id="items-3">0/0</div>
+                    <div id="items-3">-</div>
                     <div>Items Cleared Hard With: </div>
-                    <div id="items-4">0/0</div>
+                    <div id="items-4">-</div>
                     <div>Items Cleared Lunar With: </div>
-                    <div id="items-5">0/0</div>
+                    <div id="items-5">-</div>
                 </div>
                 <br>
                 <div class="title">Gem Progress</div>
                 <div class="grid-1">
                     <div>Gems Seen: </div>
-                    <div id="gems-0">0/0</div>
+                    <div id="gems-0">-</div>
                     <div>Gems Purchased: </div>
-                    <div id="gems-1">0/0</div>
-                    <div>Gems Cleared Cute With: </div>
-                    <div id="gems-2">0/0</div>
-                    <div>Gems Cleared Normal With: </div>
-                    <div id="gems-3">0/0</div>
-                    <div>Gems Cleared Hard With: </div>
-                    <div id="gems-4">0/0</div>
-                    <div>Gems Cleared Lunar With: </div>
-                    <div id="gems-5">0/0</div>
+                    <div id="gems-1">-</div>
+                    <div>Abilities Cleared Cute With: </div>
+                    <div id="gems-2">-</div>
+                    <div>Abilities Cleared Normal With: </div>
+                    <div id="gems-3">-</div>
+                    <div>Abilities Cleared Hard With: </div>
+                    <div id="gems-4">-</div>
+                    <div>Abilities Cleared Lunar With: </div>
+                    <div id="gems-5">-</div>
                 </div>
             </div>
         </div>
@@ -164,7 +164,10 @@
             <div id="rabbits-content"></div>
         </div>
         <div class="tab" id="tab-2">
-            <div id="diffs-content"></div>
+            <div id="diffs-content">
+                <div class="title">Win/Loss</div>
+                <div id="wl-grid" class="grid-5 grid"></div>
+            </div>
         </div>
         <div class="tab" id="tab-3">
             <div id="items-content">

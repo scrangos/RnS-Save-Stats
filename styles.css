@@ -76,6 +76,11 @@ body {
     grid-template-columns: auto auto auto auto auto;
 }
 
+.grid-5 {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto;
+}
+
 .grid-6 {
     display: grid;
     grid-template-columns: auto auto auto auto auto auto auto;
@@ -114,4 +119,16 @@ body {
 .sortable {
     cursor: pointer;
     user-select: none;
+}
+
+.fullrow {
+    grid-column: 1 / -1;
+    font-weight: bold;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+.box {
+    margin-top: 1em;
+    margin-bottom: 1em;
 }
