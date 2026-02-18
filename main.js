@@ -30,7 +30,7 @@ const types = [
 const wlLabels = [
     [
         "Total Attempts", "Total Wins", "Win Ratio",
-        "Fastest Win (offline)", "Fastest Win (online)",
+        "Fastest Win", "Fastest Win (offline)", "Fastest Win (online)",
         "Most Wins", "Most Wins (offline)", "Most Wins (online)"
     ],
     [
@@ -57,7 +57,7 @@ const wlLabels = [
 const wlIds = [
     [
         "wl-attempts", "wl-wins", "wl-ratio",
-        "wl-fastest0", "wl-fastest1",
+        "wl-fastest", "wl-fastest0", "wl-fastest1",
         "wl-winnest", "wl-winnest0", "wl-winnest1"
     ],
     [
@@ -865,7 +865,7 @@ function generateRabbits() {
 }
 
 function generateWinLoss() {
-    const diffChars = "CHNL";
+    const diffChars = "CNHL";
 
     for(let i in diffs) {
         let attempts = vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`] + vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
@@ -873,16 +873,85 @@ function generateWinLoss() {
         document.getElementById(`wl-attempts-${i}`).innerText = attempts;
         document.getElementById(`wl-wins-${i}`).innerText = wins;
         document.getElementById(`wl-ratio-${i}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+        
+        //fastest
+        rabbitStats.sort((a, b) => {
+            let aT = getMinIfNotZero(a[`Offline${diffs[i]}Fastest`], a[`Online${diffs[i]}Fastest`]);
+            let bT = getMinIfNotZero(b[`Offline${diffs[i]}Fastest`], b[`Online${diffs[i]}Fastest`]);
+            return compareIfNotZero(aT, bT);
+        });
+        let t = getMinIfNotZero(rabbitStats[0][`Offline${diffs[i]}Fastest`], rabbitStats[0][`Online${diffs[i]}Fastest`]);
+        let str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
+        if(t == 0) str = '-';
+        document.getElementById(`wl-fastest-${i}`).innerHTML = str;
+        
         //fastest0
+        rabbitStats.sort((a, b) => {
+            return compareIfNotZero(a[`Offline${diffs[i]}Fastest`], b[`Offline${diffs[i]}Fastest`]);
+        });
+        t = rabbitStats[0][`Offline${diffs[i]}Fastest`];
+        str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
+        if(t == 0) str = '-';
+        document.getElementById(`wl-fastest0-${i}`).innerHTML = str;
+
         //fastest1
+        rabbitStats.sort((a, b) => {
+            return compareIfNotZero(a[`Online${diffs[i]}Fastest`], b[`Online${diffs[i]}Fastest`]);
+        });
+        t = rabbitStats[0][`Online${diffs[i]}Fastest`];
+        str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
+        if(t == 0) str = '-';
+        document.getElementById(`wl-fastest1-${i}`).innerHTML = str;
+        
         //winnest
+        rabbitStats.sort((a, b) => {
+            let aW = a[`Offline${diffs[i]}Count`] + a[`Online${diffs[i]}Count`];
+            let bW = b[`Offline${diffs[i]}Count`] + b[`Online${diffs[i]}Count`];
+            return bW - aW;
+        });
+        t = rabbitStats[0][`Offline${diffs[i]}Count`] + rabbitStats[0][`Online${diffs[i]}Count`];
+        str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
+        if(t == 0) str = '-';
+        document.getElementById(`wl-winnest-${i}`).innerHTML = str;
+
         //winnest0
+        rabbitStats.sort((a, b) => {
+            let aW = a[`Offline${diffs[i]}Count`];
+            let bW = b[`Offline${diffs[i]}Count`];
+            return bW - aW;
+        });
+        t = rabbitStats[0][`Offline${diffs[i]}Count`];
+        str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
+        if(t == 0) str = '-';
+        document.getElementById(`wl-winnest0-${i}`).innerHTML = str;
+
         //winnest1
+        rabbitStats.sort((a, b) => {
+            let aW = a[`Online${diffs[i]}Count`];
+            let bW = b[`Online${diffs[i]}Count`];
+            return bW - aW;
+        });
+        t = rabbitStats[0][`Online${diffs[i]}Count`];
+        str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
+        if(t == 0) str = '-';
+        document.getElementById(`wl-winnest1-${i}`).innerHTML = str;
 
         //kingdom
+        attempts = vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`];
+        wins = vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
+        document.getElementById(`wl-kingdom-attempts-${i}`).innerText = attempts;
+        document.getElementById (`wl-kingdom-wins-${i}`).innerText = wins;
+        document.getElementById(`wl-kingdom-ratio-${i}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
         //extra
+        attempts = vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
+        wins = vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+        document.getElementById(`wl-extra-attempts-${i}`).innerText = attempts;
+        document.getElementById(`wl-extra-wins-${i}`).innerText = wins;
+        document.getElementById(`wl-extra-ratio-${i}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
         //true random
+        //todo
         //chaotic random
+        //todo
 
         let doLocMan = (id, attempts, wins) => {
             let ratio = (wins / attempts * 100).toFixed(1) + '%';
@@ -912,6 +981,8 @@ function generateWinLoss() {
         let keepVisits = vals.SaveInfo[`mapVisitKeep${diffChars[i]}`];
         let keepWins = vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
         doLocMan("keep", keepVisits, keepWins);
+        //todo: most dangerous area
+        //todo: least dangerous area
 
         //no win count :c
         doLocMan("geode", vals.SaveInfo[`mapVisitGeode${diffChars[i]}`]);
@@ -922,7 +993,101 @@ function generateWinLoss() {
         let loopVisits = vals.SaveInfo[`mapVisitDarkhall${diffChars[i]}`];
         let loopWins = vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
         doLocMan("hallway", loopVisits, loopWins);
+        //todo: most dangerous area
+        //todo: least dangerous area
     }
+
+    let outskirtVisits = 0;
+    let keepVisits = 0;
+    let keepWins = 0;
+    let geodeVisits = 0;
+    let loopVisits = 0;
+    let loopWins = 0;
+    for(let i in diffs) {
+        outskirtVisits += vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`];
+        keepVisits += vals.SaveInfo[`mapVisitKeep${diffChars[i]}`];
+        keepWins += vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
+        geodeVisits += vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
+        loopVisits += vals.SaveInfo[`mapVisitDarkhall${diffChars[i]}`];
+        loopWins += vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+    }
+    //total
+    let attempts = outskirtVisits + geodeVisits;
+    let wins = keepWins + loopWins;
+    document.getElementById(`wl-attempts-${4}`).innerText = attempts;
+    document.getElementById(`wl-wins-${4}`).innerText = wins;
+    document.getElementById(`wl-ratio-${4}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+    
+    //fastest
+    rabbitStats.sort((a, b) => {
+        return compareIfNotZero(a.FastestWinTime, b.FastestWinTime);
+    });
+    let t = rabbitStats[0][`FastestWinTime`];
+    let str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
+    if(t == 0) str = '-';
+    document.getElementById(`wl-fastest-${4}`).innerHTML = str;
+    
+    //fastest0
+    rabbitStats.sort((a, b) => {
+        return compareIfNotZero(a.FastestOfflineTime, b.FastestOfflineTime);
+    });
+    t = rabbitStats[0][`FastestOfflineTime`];
+    str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
+    if(t == 0) str = '-';
+    document.getElementById(`wl-fastest0-${4}`).innerHTML = str;
+
+    //fastest1
+    rabbitStats.sort((a, b) => {
+        return compareIfNotZero(a.FastestOnlineTime, b.FastestOnlineTime);
+    });
+    t = rabbitStats[0][`FastestOnlineTime`];
+    str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
+    if(t == 0) str = '-';
+    document.getElementById(`wl-fastest1-${4}`).innerHTML = str;
+    
+    //winnest
+    rabbitStats.sort((a, b) => {
+        return b.TotalWins - a.TotalWins;
+    });
+    t = rabbitStats[0][`TotalWins`];
+    str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
+    if(t == 0) str = '-';
+    document.getElementById(`wl-winnest-${4}`).innerHTML = str;
+
+    //winnest0
+    rabbitStats.sort((a, b) => {
+        return b.OfflineWins - a.OfflineWins;
+    });
+    t = rabbitStats[0][`OfflineWins`];
+    str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
+    if(t == 0) str = '-';
+    document.getElementById(`wl-winnest0-${4}`).innerHTML = str;
+
+    //winnest1
+    rabbitStats.sort((a, b) => {
+        return b.OnlineWins - a.OnlineWins;
+    });
+    t = rabbitStats[0][`OnlineWins`];
+    str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
+    if(t == 0) str = '-';
+    document.getElementById(`wl-winnest1-${4}`).innerHTML = str;
+
+    //kingdom
+    attempts = outskirtVisits;
+    wins = keepWins;
+    document.getElementById(`wl-kingdom-attempts-${4}`).innerText = attempts;
+    document.getElementById (`wl-kingdom-wins-${4}`).innerText = wins;
+    document.getElementById(`wl-kingdom-ratio-${4}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+    //extra
+    attempts = geodeVisits;
+    wins = loopWins;
+    document.getElementById(`wl-extra-attempts-${4}`).innerText = attempts;
+    document.getElementById(`wl-extra-wins-${4}`).innerText = wins;
+    document.getElementById(`wl-extra-ratio-${4}`).innerText = (wins / attempts * 100).toFixed(1) + '%';
+    //true random
+    //todo
+    //chaotic random
+    //todo
 
     let doTotalLocMan = (id, attempts, wins) => {
         let ratio = (wins / attempts * 100).toFixed(1) + '%';
@@ -944,20 +1109,7 @@ function generateWinLoss() {
         }
         doTotalLocMan(id, attempts, wins);
     };
-    let outskirtVisits = 0;
-    let keepVisits = 0;
-    let keepWins = 0;
-    let geodeVisits = 0;
-    let loopVisits = 0;
-    let loopWins = 0;
-    for(let i in diffs) {
-        outskirtVisits += vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`];
-        keepVisits += vals.SaveInfo[`mapVisitKeep${diffChars[i]}`];
-        keepWins += vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
-        geodeVisits += vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
-        loopVisits += vals.SaveInfo[`mapVisitDarkhall${diffChars[i]}`];
-        loopWins += vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
-    }
+
     //no win count :c
     doTotalLocMan("outskirts", outskirtVisits);
     doTotalLoc("nest", "Nest");
@@ -967,6 +1119,8 @@ function generateWinLoss() {
     doTotalLoc("lakeside", "Lakeside");
     //manual
     doTotalLocMan("keep", keepVisits, keepWins);
+    //todo: most dangerous area
+    //todo: least dangerous area
 
     //no win count :c
     doTotalLocMan("geode", geodeVisits);
@@ -975,6 +1129,8 @@ function generateWinLoss() {
     doTotalLoc("sanctum", "Sanct");
     //manual
     doTotalLocMan("hallway", loopVisits, loopWins);
+    //todo: most dangerous area
+    //todo: least dangerous area
 }
 
 function generateItems(sortType) {
@@ -1146,6 +1302,12 @@ function getMinIfNotZero(in1, in2) {
     if(in1 <= 0) return in2;
     if(in2 <= 0) return in1;
     return Math.min(in1, in2);
+}
+
+function compareIfNotZero(in1, in2) {
+    if(in1 <= 0) in1 = NEVER;
+    if(in2 <= 0) in2 = NEVER;
+    return in1 - in2;
 }
 
 function arraySum(arr) {
