@@ -127,19 +127,23 @@ function buildWLTables() {
 
 
 
+    let ind = 0;
     for(let i in wlLabels) {
         for(let j in wlLabels[i]) {
             elem = document.createElement("div");
             elem.classList.add("grid-left");
             elem.innerText = wlLabels[i][j];
+            if(ind % 2) elem.classList.add("odd");
             gridElem.appendChild(elem);
             
             for(let k = 0; k < 5; k++) {
                 elem = document.createElement("div");
                 elem.innerText = '-';
                 elem.setAttribute("id", wlIds[i][j] + '-' + k);
+                if(ind % 2) elem.classList.add("odd");
                 gridElem.appendChild(elem);
             }
+            ind++;
         }
         
         elem = document.createElement("div");
@@ -519,25 +523,25 @@ function generateSummary() {
 
     let fastest0 = fastestWins[0].FastestOfflineTime;
     if(!fastest0 || fastest0 == NEVER) fastest0 = '-';
-    else fastest0 = fastestWins[0].class + ': ' + msToString(fastest0);
+    else fastest0 = RABBITS[fastestWins[0].id].name + '<br>' + msToString(fastest0);
     let fastest1 = fastestWins[1].FastestOnlineTime;
     if(!fastest1 || fastest1 == NEVER) fastest1 = '-';
-    else fastest1 = fastestWins[1].class + ': ' + msToString(fastest1);
-    document.getElementById("fastest0-1").innerText = fastest0
-    document.getElementById("fastest0-2").innerText = fastest1;
+    else fastest1 = RABBITS[fastestWins[1].id].name + '<br>' + msToString(fastest1);
+    document.getElementById("fastest0-1").innerHTML = fastest0
+    document.getElementById("fastest0-2").innerHTML = fastest1;
 
     let winnest0 = mostWins[0].TotalWins,
         winnest1 = mostWins[1].OfflineWins,
         winnest2 = mostWins[2].OnlineWins;
     if(!winnest0) winnest0 = '-';
-    else winnest0 = mostWins[0].class + ': ' + mostWins[0].TotalWins;
+    else winnest0 = RABBITS[mostWins[0].id].name + '<br>' + mostWins[0].TotalWins;
     if(!winnest1) winnest1 = '-';
-    else winnest1 = mostWins[1].class + ': ' + mostWins[1].OfflineWins;
+    else winnest1 = RABBITS[mostWins[1].id].name + '<br>' + mostWins[1].OfflineWins;
     if(!winnest2) winnest2 = '-';
-    else winnest2 = mostWins[2].class + ': ' + mostWins[2].OnlineWins;
-    document.getElementById("winnest0-0").innerText = winnest0;
-    document.getElementById("winnest0-1").innerText = winnest1
-    document.getElementById("winnest0-2").innerText = winnest2;
+    else winnest2 = RABBITS[mostWins[2].id].name + '<br>' + mostWins[2].OnlineWins;
+    document.getElementById("winnest0-0").innerHTML = winnest0;
+    document.getElementById("winnest0-1").innerHTML = winnest1
+    document.getElementById("winnest0-2").innerHTML = winnest2;
 
     
     document.getElementById("kingdomattempts-0").innerText = vals["SaveInfo"]["mapVisitOutskirtsC"];
