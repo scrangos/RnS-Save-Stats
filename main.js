@@ -147,12 +147,12 @@ function buildWLTables() {
         gridElem.appendChild(elem);
     }
 
+    let warningElem = document.createElement("div");
+    warningElem.classList.add("fullrow");
+    warningElem.innerHTML = "<small><i>True Random and Chaotic Random runs will cause some of these values to misbehave</i></small>";
+    gridElem.appendChild(warningElem);
 
-}
 
-function test() {
-    console.log(fileText.indexOf('\n'));
-    parseVals();
 }
 
 function changeTab (index) {
@@ -351,86 +351,6 @@ function processItems() {
 
 function processLocations() {
 
-}
-
-function saveStats () {
-
-    const contElem = document.getElementById("stats");
-    while(contElem.hasChildNodes())
-        contElem.firstChild.remove();
-
-    // playtime
-    let playtimeElem = document.createElement("div");
-    let playH = (vals.Playtime.Playtime / 3600).toFixed(1);
-    playtimeElem.textContent = "Total playtime: " + playH + " hours";
-
-    contElem.appendChild(playtimeElem);
-
-    // solo/online
-    let nAttempts = vals.SaveInfo.runCountLocal + vals.SaveInfo.runCountOnline;
-
-    let pCountElem = document.createElement("div");
-    let countRatio = (vals.SaveInfo.runCountLocal / (nAttempts)).toFixed(2) * 100;
-    pCountElem.innerText = "Solo to Multiplayer ratio: "
-            + vals.SaveInfo.runCountLocal + ':' + vals.SaveInfo.runCountOnline
-            + '  (' + countRatio + ':' + (100 - countRatio) + ')';
-
-    contElem.appendChild(pCountElem);
-
-    // attempts, wins, and ratio
-    let numWinsSingle = [0,0,0,0];
-    let numWinsMulti = [0,0,0,0];
-    for(let i in vals["AllyWin"]) {
-        if(i.length < 4) continue;
-        let type = i[i.length-3];
-        let diff = i[i.length-1];
-        if(type == 0)
-            numWinsSingle[diff] += vals["AllyWin"][i];
-        else
-            numWinsMulti[diff] += vals["AllyWin"][i];
-    }
-
-    let nWins = 0;
-    for(let i in numWinsSingle)
-        nWins += numWinsSingle[i];
-    for(let i in numWinsMulti)
-        nWins += numWinsMulti[i];
-
-    let winLossElem = document.createElement("div");
-    winLossElem.textContent = "Wins/Attempts: "
-            + nWins + "/" + nAttempts
-            + ` (${(nWins/nAttempts * 100).toFixed(2)}%)`;
-    
-    contElem.appendChild(winLossElem);
-
-    // shops visited stats (and per attempt ratio)
-
-    // top 3 most won classes
-
-    // top 3 fastest classes/difficulties
-
-    // area statistics
-
-    // shop count statistics
-
-    // class win summary, in a table
-
-
-
-
-    // in true random, all visits and wins count as normal
-    // in chaotic random, i'm not sure what counts tbh. 
-        // visits, no clue
-        // wins are determined by which boss you faced
-    // mapWinChaosRand and mapWinTrueRand increment on beating the final boss
-
-    // item/upgrade stats are binary, with the following values (i'm guessing)
-        // 1's digit if seen
-        // 2's digit if ever picked up
-        // 4's digit if won with on cute
-        // 8's digit if won with on normal
-        // 16's digit if won with on hard
-        // 32's digit if won with on lunar
 }
 
 function generateSummary() {
@@ -848,7 +768,7 @@ function generateRabbits() {
         }
 
         titleElem = document.createElement("div");
-        titleElem.classList.add("centered");
+        titleElem.classList.add("subtitle");
         titleElem.textContent = "Gem Progress";
 
         rabbitCont.appendChild(titleElem);
