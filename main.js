@@ -847,7 +847,7 @@ function generateWinLoss() {
         });
         let t = getMinIfNotZero(rabbitStats[0][`Offline${diffs[i]}Fastest`], rabbitStats[0][`Online${diffs[i]}Fastest`]);
         let str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-        if(t == 0 || !t) str = '-';
+        if(t == 0 || !t || t == NEVER) str = '-';
         document.getElementById(`wl-fastest-${i}`).innerHTML = str;
         
         //fastest0
@@ -856,7 +856,7 @@ function generateWinLoss() {
         });
         t = rabbitStats[0][`Offline${diffs[i]}Fastest`];
         str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-        if(t == 0 || !t) str = '-';
+        if(t == 0 || !t || t == NEVER) str = '-';
         document.getElementById(`wl-fastest0-${i}`).innerHTML = str;
 
         //fastest1
@@ -865,7 +865,7 @@ function generateWinLoss() {
         });
         t = rabbitStats[0][`Online${diffs[i]}Fastest`];
         str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-        if(t == 0 || !t) str = '-';
+        if(t == 0 || !t || t == NEVER) str = '-';
         document.getElementById(`wl-fastest1-${i}`).innerHTML = str;
         
         //winnest
