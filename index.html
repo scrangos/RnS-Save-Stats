@@ -26,11 +26,11 @@
     <div>You can find it at <code>C:\Users\USERNAME\AppData\Local\RabbitSteel\SaveFile\savedata.ini</code></div>
 
     <div id="tabs">
-        <button class="tab-button" onclick="changeTab(0)">Summary</button>
-        <button class="tab-button" onclick="changeTab(1)">Rabbits</button>
-        <button class="tab-button" onclick="changeTab(2)">Win/Loss</button>
-        <button class="tab-button" onclick="changeTab(3)">Items & Upgrades</button>
-        <button class="tab-button" onclick="changeTab(4)">Raw View</button>
+        <button class="tab-button active" id="tab-but-0" onclick="changeTab(0)">Summary</button>
+        <button class="tab-button" id="tab-but-1" onclick="changeTab(1)">Rabbits</button>
+        <button class="tab-button" id="tab-but-2" onclick="changeTab(2)">Win/Loss</button>
+        <button class="tab-button" id="tab-but-3" onclick="changeTab(3)">Items & Upgrades</button>
+        <button class="tab-button" id="tab-but-4" onclick="changeTab(4)">Raw View</button>
     </div>
     <div id="tab-content">
         <div class="tab active" id="tab-0">
@@ -173,23 +173,56 @@
             <div id="items-content">
                 <div class="title">Items</div>
                 <div class="grid-6 grid divider" id="item-grid">
-                    <div onclick="generateItems(2)" class="grid-top sortable">Item</div>
-                    <div onclick="generateItems(3)" class="grid-top sortable">Seen</div>
-                    <div onclick="generateItems(4)" class="grid-top sortable">Held</div>
-                    <div onclick="generateItems(5)" class="grid-top sortable">Cute<br>Cleared</div>
-                    <div onclick="generateItems(6)" class="grid-top sortable">Normal<br>Cleared</div>
-                    <div onclick="generateItems(7)" class="grid-top sortable">Hard<br>Cleared</div>
-                    <div onclick="generateItems(8)" class="grid-top sortable">Lunar<br>Cleared</div>
+                    <div class="grid-top">
+                        <span id="sort-i-1" onclick="generateItems(0)" class="default-sort sortbox active sortable">⭯</span>
+                        <span onclick="generateItems(2)" class="sortable">Items
+                            <span class="sortbox" id="sort-i-2"></span>
+                        </span>
+                    </div>
+                    <div onclick="generateItems(3)" class="grid-top sortable">Seen
+                        <span class="sortbox" id="sort-i-3"></span>
+                    </div>
+                    <div onclick="generateItems(4)" class="grid-top sortable">Held
+                        <span class="sortbox" id="sort-i-4"></span>
+                    </div>
+                    <div onclick="generateItems(5)" class="grid-top sortable">Cute<br>Cleared
+                        <span class="sortbox" id="sort-i-5"></span>
+                    </div>
+                    <div onclick="generateItems(6)" class="grid-top sortable">Normal<br>Cleared
+                        <span class="sortbox" id="sort-i-6"></span>
+                    </div>
+                    <div onclick="generateItems(7)" class="grid-top sortable">Hard<br>Cleared
+                        <span class="sortbox" id="sort-i-7"></span>
+                    </div>
+                    <div onclick="generateItems(8)" class="grid-top sortable">Lunar<br>Cleared
+                        <span class="sortbox" id="sort-i-8"></span>
+                    </div>
                 </div>
                 <div class="title">Gems</div>
                 <div class="grid-6 grid" id="gems-grid">
-                    <div onclick="generateGems(1)" class="grid-top sortable">Gem</div>
-                    <div onclick="generateGems(3)" class="grid-top sortable">Seen</div>
-                    <div onclick="generateGems(4)" class="grid-top sortable">Bought</div>
-                    <div onclick="generateGems(5)" class="grid-top sortable">Cute<br>Cleared</div>
-                    <div onclick="generateGems(6)" class="grid-top sortable">Normal<br>Cleared</div>
-                    <div onclick="generateGems(7)" class="grid-top sortable">Hard<br>Cleared</div>
-                    <div onclick="generateGems(8)" class="grid-top sortable">Lunar<br>Cleared</div>
+                    <div class="grid-top">
+                        <span onclick="generateGems(1)" class="sortable">Items
+                            <span class="sortbox active" id="sort-g-1"></span>
+                        </span>
+                    </div>
+                    <div onclick="generateGems(3)" class="grid-top sortable">Seen
+                        <span class="sortbox" id="sort-g-3"></span>
+                    </div>
+                    <div onclick="generateGems(4)" class="grid-top sortable">Held
+                        <span class="sortbox" id="sort-g-4"></span>
+                    </div>
+                    <div onclick="generateGems(5)" class="grid-top sortable">Cute<br>Cleared
+                        <span class="sortbox" id="sort-g-5"></span>
+                    </div>
+                    <div onclick="generateGems(6)" class="grid-top sortable">Normal<br>Cleared
+                        <span class="sortbox" id="sort-g-6"></span>
+                    </div>
+                    <div onclick="generateGems(7)" class="grid-top sortable">Hard<br>Cleared
+                        <span class="sortbox" id="sort-g-7"></span>
+                    </div>
+                    <div onclick="generateGems(8)" class="grid-top sortable">Lunar<br>Cleared
+                        <span class="sortbox" id="sort-g-8"></span>
+                    </div>
                 </div>
             </div>
         </div>

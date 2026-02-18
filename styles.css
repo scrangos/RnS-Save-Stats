@@ -109,6 +109,7 @@ body {
     border-bottom: 1px solid #000;
     padding-top: 2px;
     padding-bottom: 2px;
+    align-content: center;
 }
 
 .grid-left {
@@ -125,8 +126,10 @@ body {
 }
 
 .sortable {
+    display: block;
     cursor: pointer;
     user-select: none;
+    /* background-color: #F99; */
 }
 
 .fullrow {
@@ -143,6 +146,33 @@ body {
 }
 
 .tab-button {
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding: 0.5rem 2rem 0.5rem 2rem;
+    border: 2px solid #000;
+    border-radius: 4px;
+    background-color: #FFF;
+}
+
+.tab-button.active {
+    background-color: #DDD;
+}
+
+.default-sort {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    float: left;
+    justify-self: start;
+    border: 1px solid #000;
+    border-radius: 2px;
+    width: 1em;
+    height: 1em;
+    align-content: center;
+
+}
+
+.sortbox:not(.default-sort) {
+    display: none;
+}
+.sortbox.active:not(.default-sort) {
+    display: contents;
 }

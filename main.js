@@ -2,7 +2,7 @@ let file, fileText;
 let vals;
 let currentTab = 0;
 let prevSortTypes = {
-    items: 1,
+    items: 0,
     gems: 1
 }
 
@@ -163,6 +163,8 @@ function changeTab (index) {
     if(index == currentTab) return;
     document.getElementById(`tab-${currentTab}`).classList.remove("active");
     document.getElementById(`tab-${index}`).classList.add("active");
+    document.getElementById(`tab-but-${currentTab}`).classList.remove("active");
+    document.getElementById(`tab-but-${index}`).classList.add("active");
     currentTab = index;
 }
 
@@ -189,8 +191,8 @@ function handleUpload(file) {
         generateSummary();
         generateRabbits();
         generateWinLoss();
-        generateItems();
-        generateGems();
+        generateItems(0);
+        generateGems(0);
         generateRaw();
     }
     reader.readAsText(file);
@@ -1115,7 +1117,10 @@ function generateItems(sortType) {
     itemsArray.sort((a, b) => {
         return a.id - b.id;
     });
-    if(sortType) {
+    let sortBox = document.getElementById(`sort-i-${Math.abs(prevSortTypes.items)}`);
+    if(sortBox) sortBox.classList.remove("active");
+    if(sortBox && sortBox.classList.contains("default-sort")) sortBox.innerText = "⭯";
+    if(sortType || sortType == 0) {
         const SORTS = ["", "id", "name", "seen", "held", "cute", "normal", "hard", "lunar"];
         if(sortType > SORTS.length) {
             console.error("attempted to sort by out of bounds value");
@@ -1123,6 +1128,10 @@ function generateItems(sortType) {
         else {
             let checkVar = SORTS[sortType];
             let sortMult = 1;
+            if(sortType == 0) {
+                sortType = 1;
+                checkVar = "id";
+            }
             if(sortType == prevSortTypes.items) {
                 sortMult = -1;
                 prevSortTypes.items = -sortType;
@@ -1131,10 +1140,20 @@ function generateItems(sortType) {
                 prevSortTypes.items = sortType;
 
             itemsArray.sort((a, b) => {
+                if(parseInt(a[checkVar]) || parseInt(a[checkVar]) == 0)
+                    return sortMult * (a[checkVar] - b[checkVar]);
                 return sortMult * (a[checkVar] > b[checkVar] ? 1 : -1);
             });
         }
     }
+    sortBox = document.getElementById(`sort-i-${Math.abs(prevSortTypes.items)}`);
+    if(sortBox) {
+        console.log(prevSortTypes.items);
+        if(prevSortTypes.items > 0) sortBox.textContent = '⮟';
+        else if(prevSortTypes.items < 0) sortBox.textContent = '⮝';
+        sortBox.classList.add("active");
+    }
+
 
     let itemsElem = document.getElementById("item-grid");
     let itemsChildren = itemsElem.children;
@@ -1155,14 +1174,13 @@ function generateItems(sortType) {
         prevSet = curSet;
 
         let labelElem = document.createElement("div");
-        if(vals["ItemDiscovery"][itemsArray[i].key]) {
+        if(vals["ItemDiscovery"][itemsArray[i].key])
             labelElem.innerText = itemsArray[i].name;
-        }
         else
             labelElem.innerText = "Undiscovered Item";
 
         let color = SETS[curSet].color;
-        if(i % 2 && SETS[curSet].color2) color = SETS[curSet].color2;
+        if(itemsArray[i].id % 2 && SETS[curSet].color2) color = SETS[curSet].color2;
         if(i % 2) color = blendColor(color, "#FFFFFF", 1, 4);
         else color = blendColor(color, "#FFFFFF", 1, 8);
         let styleString = `background: ${color}`;
@@ -1186,6 +1204,8 @@ function generateGems (sortType) {
     gemsArray.sort((a, b) => {
         return a.id - b.id;
     });
+    let sortBox = document.getElementById(`sort-g-${Math.abs(prevSortTypes.gems)}`);
+    if(sortBox) sortBox.classList.remove("active");
     if(sortType) {
         const SORTS = ["", "id", "key", "seen", "held", "cute", "normal", "hard", "lunar"];
         if(sortType > SORTS.length) {
@@ -1201,11 +1221,25 @@ function generateGems (sortType) {
             else
                 prevSortTypes.gems = sortType;
 
+            if(sortType == 0) {
+                prevSortTypes.gems = 1;
+                sortMult = 1;
+                checkVar = "id";
+            }
+
             gemsArray.sort((a, b) => {
                 return sortMult * (a[checkVar] > b[checkVar] ? 1 : -1);
             });
         }
     }
+    sortBox = document.getElementById(`sort-g-${Math.abs(prevSortTypes.gems)}`);
+    if(sortBox) {
+        if(prevSortTypes.gems > 0) sortBox.textContent = '⮟';
+        else if(prevSortTypes.gems < 0) sortBox.textContent = '⮝';
+        sortBox.classList.add("active");
+    }
+
+
 
     let gemsElem = document.getElementById("gems-grid");
     let gemschildren = gemsElem.children;
