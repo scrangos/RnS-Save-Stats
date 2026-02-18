@@ -274,10 +274,11 @@ function processRabbits() {
                         rabbitStats[j].FastestOfflineDiff = diff;
                     }
                     
-                    if(type == 1 && (rabbitStats[j].FastestOfflineTime == NEVER
+                    if(type == 1 && (rabbitStats[j].FastestOnlineTime == NEVER
                             || vals["AllyWinTime"][i] < rabbitStats[j].FastestOnlineTime)) {
                         rabbitStats[j].FastestOnlineTime = vals["AllyWinTime"][i];
                         rabbitStats[j].FastestOnlineDiff = diff;
+                        console.log(`new fastest online ${rabbitNames[j]}: ${msToString(vals["AllyWinTime"][i])}`);
                     }
                 }
             }
@@ -684,7 +685,9 @@ function generateRabbits() {
     rabbitStats.sort((a, b) => {return a.id - b.id});
 
     for(let i in rabbitStats) {
-        //todo: skip if character is undiscovered
+        let rKey = RABBITS[rabbitStats[i].id].key;
+        if(RABBITS[rabbitStats[i].id].itemKey) rKey = RABBITS[rabbitStats[i].id].itemKey;
+        if(vals.ItemDiscovery[`mv_${rKey}_0`] <= 0) continue;
 
         let rabbitCont = document.createElement("div");
         let color = blendColor(RABBITS[rabbitStats[i].id].color, "#FFFFFF", 1, 4);
@@ -774,7 +777,10 @@ function generateRabbits() {
             gridElem.appendChild(elem);
         }
         elem = document.createElement("div");
-        elem.innerText = msToString(rabbitStats[i].FastestOfflineTime);
+        let t = rabbitStats[i].FastestOfflineTime;
+        if(t == 0 || t == NEVER) t = '-';
+        else t = msToString(t)
+        elem.innerText = t;
         gridElem.appendChild(elem);
 
         // online fastest
@@ -790,7 +796,10 @@ function generateRabbits() {
             gridElem.appendChild(elem);
         }
         elem = document.createElement("div");
-        elem.innerText = msToString(rabbitStats[i].FastestOnlineTime);
+        t = rabbitStats[i].FastestOnlineTime;
+        if(t == 0 || t == NEVER) t = '-';
+        else t = msToString(t)
+        elem.innerText = t;
         gridElem.appendChild(elem);
 
         rabbitCont.appendChild(gridElem);
