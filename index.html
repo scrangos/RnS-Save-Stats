@@ -23,14 +23,14 @@
     <label>Upload your save here:</label>
     <input type="file" id="save-upload" onchange="handleUpload()"></input><br>
     <div id="upload-error" class="error-message">Please upload a valid save file (<code>savedata.ini</code>)</div>
-    <div>You can find this file at <code>C:\Users\USERNAME\AppData\Local\RabbitSteel\SaveFile\savedata.ini</code></div>
+    <div>You can find it at <code>C:\Users\USERNAME\AppData\Local\RabbitSteel\SaveFile\savedata.ini</code></div>
 
     <div id="tabs">
-        <button onclick="changeTab(0)">Summary</button>
-        <button onclick="changeTab(1)">Rabbits</button>
-        <button onclick="changeTab(2)">Win/Loss</button>
-        <button onclick="changeTab(3)">Items & Upgrades</button>
-        <button onclick="changeTab(4)">Raw View</button>
+        <button class="tab-button" onclick="changeTab(0)">Summary</button>
+        <button class="tab-button" onclick="changeTab(1)">Rabbits</button>
+        <button class="tab-button" onclick="changeTab(2)">Win/Loss</button>
+        <button class="tab-button" onclick="changeTab(3)">Items & Upgrades</button>
+        <button class="tab-button" onclick="changeTab(4)">Raw View</button>
     </div>
     <div id="tab-content">
         <div class="tab active" id="tab-0">
@@ -176,25 +176,28 @@
                     <div onclick="generateItems(2)" class="grid-top sortable">Item</div>
                     <div onclick="generateItems(3)" class="grid-top sortable">Seen</div>
                     <div onclick="generateItems(4)" class="grid-top sortable">Held</div>
-                    <div onclick="generateItems(5)" class="grid-top sortable">Cute</div>
-                    <div onclick="generateItems(6)" class="grid-top sortable">Normal</div>
-                    <div onclick="generateItems(7)" class="grid-top sortable">Hard</div>
-                    <div onclick="generateItems(8)" class="grid-top sortable">Lunar</div>
+                    <div onclick="generateItems(5)" class="grid-top sortable">Cute<br>Cleared</div>
+                    <div onclick="generateItems(6)" class="grid-top sortable">Normal<br>Cleared</div>
+                    <div onclick="generateItems(7)" class="grid-top sortable">Hard<br>Cleared</div>
+                    <div onclick="generateItems(8)" class="grid-top sortable">Lunar<br>Cleared</div>
                 </div>
                 <div class="title">Gems</div>
                 <div class="grid-6 grid" id="gems-grid">
                     <div onclick="generateGems(1)" class="grid-top sortable">Gem</div>
                     <div onclick="generateGems(3)" class="grid-top sortable">Seen</div>
                     <div onclick="generateGems(4)" class="grid-top sortable">Bought</div>
-                    <div onclick="generateGems(5)" class="grid-top sortable">Cute</div>
-                    <div onclick="generateGems(6)" class="grid-top sortable">Normal</div>
-                    <div onclick="generateGems(7)" class="grid-top sortable">Hard</div>
-                    <div onclick="generateGems(8)" class="grid-top sortable">Lunar</div>
+                    <div onclick="generateGems(5)" class="grid-top sortable">Cute<br>Cleared</div>
+                    <div onclick="generateGems(6)" class="grid-top sortable">Normal<br>Cleared</div>
+                    <div onclick="generateGems(7)" class="grid-top sortable">Hard<br>Cleared</div>
+                    <div onclick="generateGems(8)" class="grid-top sortable">Lunar<br>Cleared</div>
                 </div>
             </div>
         </div>
         <div class="tab" id="tab-4">
             <div id="raw-content"></div>
         </div>
+    </div>
+    <div class="centered">
+        <small>This application is <a href="https://github.com/GaviGuy/RnS-Save-Stats">open source</a>. Your information isn't uploaded anywhere.</small>
     </div>
 </body>
