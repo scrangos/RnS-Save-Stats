@@ -29,7 +29,7 @@
         <button class="tab-button active" id="tab-but-0" onclick="changeTab(0)">Summary</button>
         <button class="tab-button" id="tab-but-1" onclick="changeTab(1)">Rabbits</button>
         <button class="tab-button" id="tab-but-2" onclick="changeTab(2)">Win/Loss</button>
-        <button class="tab-button" id="tab-but-3" onclick="changeTab(3)">Items & Upgrades</button>
+        <button class="tab-button" id="tab-but-3" onclick="changeTab(3)">Items & Abilities</button>
         <button class="tab-button" id="tab-but-4" onclick="changeTab(4)">Raw View</button>
     </div>
     <div id="tab-content">
@@ -171,11 +171,11 @@
         </div>
         <div class="tab" id="tab-3">
             <div id="items-content">
-                <div class="title">Items</div>
+                <div class="title">Items & Abilities</div>
                 <div class="grid-6 grid divider" id="item-grid">
                     <div class="grid-top">
                         <span id="sort-i-1" onclick="generateItems(0)" class="default-sort sortbox active sortable">⭯</span>
-                        <span onclick="generateItems(2)" class="sortable">Items
+                        <span onclick="generateItems(2)" class="sortable">Item
                             <span class="sortbox" id="sort-i-2"></span>
                         </span>
                     </div>
@@ -201,7 +201,7 @@
                 <div class="title">Gems</div>
                 <div class="grid-6 grid" id="gems-grid">
                     <div class="grid-top">
-                        <span onclick="generateGems(1)" class="sortable">Items
+                        <span onclick="generateGems(1)" class="sortable">Ability
                             <span class="sortbox active" id="sort-g-1"></span>
                         </span>
                     </div>
