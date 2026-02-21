@@ -15,11 +15,6 @@ let gemTotals = [];
 
 const NEVER = 99999999;
 
-const rabbitNames = [
-    "wizard", "assassin", "hblade", "dancer", "druid",
-    "spellsword", "sniper", "bruiser", "defender", "ancient",
-    "hammer", "pyro", "gunner", "shadow"
-];
 const diffs = [
     "Cute", "Normal", "Hard", "Lunar"
 ];
@@ -232,10 +227,10 @@ function parseVals() {
 
 function processRabbits() {
     rabbitStats = [];
-    for(let i in rabbitNames) {
+    for(let i in RABBITS) {
         rabbitStats.push({
             id: i,
-            class: rabbitNames[i],
+            class: RABBITS[i].key,
             FastestWinTime: NEVER,
             FastestWinDiff: -1,
             FastestWinType: -1,
@@ -249,8 +244,8 @@ function processRabbits() {
         });
     }
     for(let i in vals["AllyWin"]) {
-        for(let j in rabbitNames) {
-            if(i.includes(rabbitNames[j])) {
+        for(let j in RABBITS) {
+            if(i.includes(RABBITS[j].key)) {
                 let diff = i[i.length-1];
                 let type = i[i.length-3];
                 rabbitStats[j][types[type] + diffs[diff] + "Count"] = vals["AllyWin"][i];
@@ -261,8 +256,8 @@ function processRabbits() {
         }
     }
     for(let i in vals["AllyWinTime"]) {
-        for(let j in rabbitNames) {
-            if(i.includes(rabbitNames[j])) {
+        for(let j in RABBITS) {
+            if(i.includes(RABBITS[j].key)) {
                 let diff = i[i.length-1];
                 let type = i[i.length-3];
                 rabbitStats[j][types[type] + diffs[diff] + "Fastest"] = vals["AllyWinTime"][i];
@@ -353,10 +348,6 @@ function processItems() {
             if(lunar) gemTotals[5]++;
         }
     }
-}
-
-function processLocations() {
-
 }
 
 function generateSummary() {
@@ -490,6 +481,59 @@ function generateSummary() {
             else break;
         }
     }
+
+    let randWins = vals.SaveInfo.mapWinTrueRandC
+            + vals.SaveInfo.mapWinTrueRandN
+            + vals.SaveInfo.mapWinTrueRandH
+            + vals.SaveInfo.mapWinTrueRandL
+            + vals.SaveInfo.mapWinChaosRandC
+            + vals.SaveInfo.mapWinTrueRandN
+            + vals.SaveInfo.mapWinTrueRandH
+            + vals.SaveInfo.mapWinTrueRandL;
+    
+    if(randWins) {
+        let levCont = document.getElementById("lev-unlock");
+        levCont.classList.remove("inactive");
+        let levGrid = document.getElementById("lev-grid");
+        while(levGrid.children.length > 4)
+            levGrid.children[4].remove();
+
+        let locks = [
+            vals.SaveInfo.trinketLockWin,
+            vals.SaveInfo.ringLockWinN,
+            vals.SaveInfo.ringLockWinH,
+            vals.SaveInfo.ringLockWinL
+        ];
+
+
+        for(let i in RABBITS) {
+            let elem = document.createElement("div");
+            elem.innerText = RABBITS[i].name;
+            elem.classList.add("grid-left");
+            levGrid.appendChild(elem);
+            for(let j = 1; j < 4; j++) {
+                elem = document.createElement("div");
+                elem.innerText = (locks[j] & Math.pow(2, i)) > 0 ? 'X' : '';
+                levGrid.appendChild(elem);
+            }
+        }
+
+        let lockElem = document.getElementById("lev-locks");
+        lockElem.textContent = "";
+        for(let i = 0; i < 5; i++) {
+            if(vals.SaveInfo.trinketLockWin & Math.pow(2, i))
+                lockElem.textContent += "X ";
+            else
+                lockElem.textContent += "- ";
+        }
+    }
+    else {
+        let levCont = document.getElementById("lev-unlock");
+        levCont.classList.add("inactive");
+    }
+
+
+
 
     document.getElementById("playtime").innerText = (vals["Playtime"]["Playtime"]/3600).toFixed(1) + " hours";
 
