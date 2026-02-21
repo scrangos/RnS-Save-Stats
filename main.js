@@ -1192,7 +1192,6 @@ function generateItems(sortType) {
     }
     sortBox = document.getElementById(`sort-i-${Math.abs(prevSortTypes.items)}`);
     if(sortBox) {
-        console.log(prevSortTypes.items);
         if(prevSortTypes.items > 0) sortBox.textContent = '⮟';
         else if(prevSortTypes.items < 0) sortBox.textContent = '⮝';
         sortBox.classList.add("active");
