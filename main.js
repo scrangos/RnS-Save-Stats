@@ -487,10 +487,11 @@ function generateSummary() {
             + vals.SaveInfo.mapWinTrueRandH
             + vals.SaveInfo.mapWinTrueRandL
             + vals.SaveInfo.mapWinChaosRandC
-            + vals.SaveInfo.mapWinTrueRandN
-            + vals.SaveInfo.mapWinTrueRandH
-            + vals.SaveInfo.mapWinTrueRandL;
+            + vals.SaveInfo.mapWinChaosRandN
+            + vals.SaveInfo.mapWinChaosRandH
+            + vals.SaveInfo.mapWinChaosRandL;
     
+    console.log(randWins);
     if(randWins) {
         let levCont = document.getElementById("lev-unlock");
         levCont.classList.remove("inactive");
