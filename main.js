@@ -491,13 +491,12 @@ function generateSummary() {
             + vals.SaveInfo.mapWinChaosRandH
             + vals.SaveInfo.mapWinChaosRandL;
     
-    console.log(randWins);
+    let levCont = document.getElementById("lev-unlock");
+    let levGrid = document.getElementById("lev-grid");
+    while(levGrid.children.length > 4)
+        levGrid.children[4].remove();
     if(randWins) {
-        let levCont = document.getElementById("lev-unlock");
         levCont.classList.remove("inactive");
-        let levGrid = document.getElementById("lev-grid");
-        while(levGrid.children.length > 4)
-            levGrid.children[4].remove();
 
         let locks = [
             vals.SaveInfo.trinketLockWin,
@@ -529,7 +528,6 @@ function generateSummary() {
         }
     }
     else {
-        let levCont = document.getElementById("lev-unlock");
         levCont.classList.add("inactive");
     }
 
