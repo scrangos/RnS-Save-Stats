@@ -169,7 +169,7 @@ function handleUpload(file) {
         file = elem.files[0];
     } 
     if(!file) return;
-    if(file.name != "savedata.ini") {
+    if(!file.name.includes("savedata") || !file.name.includes(".ini")) {
         document.getElementById("upload-error").classList.add("active");
         return;
     }
@@ -315,6 +315,17 @@ function processItems() {
             if(hard) itemTotals[4]++;
             if(lunar) itemTotals[5]++;
         }
+        else itemsArray.push({
+            key: ITEMS[i].key,
+            name: ITEMS[i].name,
+            id: ITEMS[i].id,
+            seen: false,
+            held: false,
+            cute: false,
+            normal: false,
+            hard: false,
+            lunar: false
+        });
     }
     
     gemsArray = [];
@@ -347,6 +358,19 @@ function processItems() {
             if(hard) gemTotals[4]++;
             if(lunar) gemTotals[5]++;
         }
+        else gemsArray.push({
+            key: GEMS[i].key,
+            type: GEMS[i].type,
+            cId: GEMS[i].cId,
+            slot: GEMS[i].slot,
+            id: GEMS[i].id,
+            seen: false,
+            held: false,
+            cute: false,
+            normal: false,
+            hard: false,
+            lunar: false
+        });
     }
 }
 
@@ -1218,8 +1242,10 @@ function generateItems(sortType) {
         let labelElem = document.createElement("div");
         if(vals["ItemDiscovery"][itemsArray[i].key])
             labelElem.innerText = itemsArray[i].name;
-        else
+        else {
             labelElem.innerText = "Undiscovered Item";
+            labelElem.classList.add("unknown");
+        }
 
         let color = SETS[curSet].color;
         if(itemsArray[i].id % 2 && SETS[curSet].color2) color = SETS[curSet].color2;
@@ -1293,6 +1319,9 @@ function generateGems (sortType) {
 
         // add a character label if this is a different char
         if(cId != gemsArray[i].cId) {
+            let rKey = RABBITS[gemsArray[i].cId].itemKey;
+            if(!rKey) rKey = RABBITS[gemsArray[i].cId].key;
+            if(!vals.ItemDiscovery[`mv_${rKey}_0`]) continue;
             cId = gemsArray[i].cId;
             let styleString = `background:${RABBITS[cId].color};`;
             let charElem = document.createElement("div");
