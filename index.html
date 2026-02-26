@@ -141,6 +141,8 @@
                     <div id="items-4">-</div>
                     <div>Items Cleared Lunar With: </div>
                     <div id="items-5">-</div>
+                    <div>Items Cleared Any Diff With: </div>
+                    <div id="items-6">-</div>
                 </div>
                 <br>
                 <div class="title">Gem Progress</div>
@@ -157,6 +159,8 @@
                     <div id="gems-4">-</div>
                     <div>Abilities Cleared Lunar With: </div>
                     <div id="gems-5">-</div>
+                    <div>Abilities Cleared Any Diff With: </div>
+                    <div id="gems-6">-</div>
                 </div>
                 <div id="lev-unlock" class="inactive slim">
                     <br>
@@ -186,7 +190,7 @@
         <div class="tab" id="tab-3">
             <div id="items-content">
                 <div class="title">Items & Abilities</div>
-                <div class="grid-6 grid divider" id="item-grid">
+                <div class="grid-7 grid divider" id="item-grid">
                     <div class="grid-top">
                         <span id="sort-i-1" onclick="generateItems(0)" class="default-sort sortbox active sortable">⭯</span>
                         <span onclick="generateItems(2)" class="sortable">Item
@@ -199,21 +203,24 @@
                     <div onclick="generateItems(4)" class="grid-top sortable">Held
                         <span class="sortbox" id="sort-i-4"></span>
                     </div>
-                    <div onclick="generateItems(5)" class="grid-top sortable">Cute<br>Cleared
+                    <div onclick="generateItems(5)" class="grid-top sortable">Cute<br>Win
                         <span class="sortbox" id="sort-i-5"></span>
                     </div>
-                    <div onclick="generateItems(6)" class="grid-top sortable">Normal<br>Cleared
+                    <div onclick="generateItems(6)" class="grid-top sortable">Normal<br>Win
                         <span class="sortbox" id="sort-i-6"></span>
                     </div>
-                    <div onclick="generateItems(7)" class="grid-top sortable">Hard<br>Cleared
+                    <div onclick="generateItems(7)" class="grid-top sortable">Hard<br>Win
                         <span class="sortbox" id="sort-i-7"></span>
                     </div>
-                    <div onclick="generateItems(8)" class="grid-top sortable">Lunar<br>Cleared
+                    <div onclick="generateItems(8)" class="grid-top sortable">Lunar<br>Win
                         <span class="sortbox" id="sort-i-8"></span>
+                    </div>
+                    <div onclick="generateItems(9)" class="grid-top sortable">Any<br>Win
+                        <span class="sortbox" id="sort-i-9"></span>
                     </div>
                 </div>
                 <div class="title">Gems</div>
-                <div class="grid-6 grid" id="gems-grid">
+                <div class="grid-7 grid" id="gems-grid">
                     <div class="grid-top">
                         <span onclick="generateGems(1)" class="sortable">Ability
                             <span class="sortbox active" id="sort-g-1"></span>
@@ -236,6 +243,9 @@
                     </div>
                     <div onclick="generateGems(8)" class="grid-top sortable">Lunar<br>Cleared
                         <span class="sortbox" id="sort-g-8"></span>
+                    </div>
+                    <div onclick="generateGems(9)" class="grid-top sortable">Any<br>Cleared
+                        <span class="sortbox" id="sort-g-9"></span>
                     </div>
                 </div>
             </div>

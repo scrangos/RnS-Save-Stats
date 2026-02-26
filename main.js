@@ -288,7 +288,7 @@ function processRabbits() {
 
 function processItems() {
     itemsArray = [];
-    itemTotals = [0, 0, 0, 0, 0, 0];
+    itemTotals = [0, 0, 0, 0, 0, 0, 0];
     for(let i in ITEMS) {
         if(vals["ItemDiscovery"][ITEMS[i].key]) {
             let seen = (vals["ItemDiscovery"][ITEMS[i].key] & 1) > 0;
@@ -297,6 +297,7 @@ function processItems() {
             let normal = (vals["ItemDiscovery"][ITEMS[i].key] & 8) > 0;
             let hard = (vals["ItemDiscovery"][ITEMS[i].key] & 16) > 0;
             let lunar = (vals["ItemDiscovery"][ITEMS[i].key] & 32) > 0;
+            let any = (vals["ItemDiscovery"][ITEMS[i].key] & 60) > 0;
             itemsArray.push({
                 key: ITEMS[i].key,
                 name: ITEMS[i].name,
@@ -306,7 +307,8 @@ function processItems() {
                 cute: cute,
                 normal: normal,
                 hard: hard,
-                lunar: lunar
+                lunar: lunar,
+                any: any
             });
             if(seen) itemTotals[0]++;
             if(held) itemTotals[1]++;
@@ -314,6 +316,7 @@ function processItems() {
             if(normal) itemTotals[3]++;
             if(hard) itemTotals[4]++;
             if(lunar) itemTotals[5]++;
+            if(any) itemTotals[6]++;
         }
         else itemsArray.push({
             key: ITEMS[i].key,
@@ -324,12 +327,13 @@ function processItems() {
             cute: false,
             normal: false,
             hard: false,
-            lunar: false
+            lunar: false,
+            any: false
         });
     }
     
     gemsArray = [];
-    gemTotals = [0, 0, 0, 0, 0, 0];
+    gemTotals = [0, 0, 0, 0, 0, 0, 0];
     for(let i in GEMS) {
         if(vals["ItemDiscovery"][GEMS[i].key]) {
             let seen = (vals["ItemDiscovery"][GEMS[i].key] & 1) > 0;
@@ -338,6 +342,7 @@ function processItems() {
             let normal = (vals["ItemDiscovery"][GEMS[i].key] & 8) > 0;
             let hard = (vals["ItemDiscovery"][GEMS[i].key] & 16) > 0;
             let lunar = (vals["ItemDiscovery"][GEMS[i].key] & 32) > 0;
+            let any = (vals["ItemDiscovery"][GEMS[i].key] & 60) > 0;
             gemsArray.push({
                 key: GEMS[i].key,
                 type: GEMS[i].type,
@@ -349,7 +354,8 @@ function processItems() {
                 cute: cute,
                 normal: normal,
                 hard: hard,
-                lunar: lunar
+                lunar: lunar,
+                any: any
             });
             if(seen && GEMS[i].type > 0) gemTotals[0]++;
             if(held && GEMS[i].type > 0) gemTotals[1]++;
@@ -357,6 +363,7 @@ function processItems() {
             if(normal) gemTotals[3]++;
             if(hard) gemTotals[4]++;
             if(lunar) gemTotals[5]++;
+            if(any) gemTotals[6]++;
         }
         else gemsArray.push({
             key: GEMS[i].key,
@@ -369,7 +376,8 @@ function processItems() {
             cute: false,
             normal: false,
             hard: false,
-            lunar: false
+            lunar: false,
+            any: false
         });
     }
 }
@@ -663,6 +671,7 @@ function generateSummary() {
     document.getElementById("items-3").innerText = itemTotals[3] + '/' + ITEMS.length;
     document.getElementById("items-4").innerText = itemTotals[4] + '/' + ITEMS.length;
     document.getElementById("items-5").innerText = itemTotals[5] + '/' + ITEMS.length;
+    document.getElementById("items-6").innerText = itemTotals[6] + '/' + ITEMS.length;
 
     //gems
     document.getElementById("gems-0").innerText = gemTotals[0] + '/' + (GEMS.length - RABBITS.length * 4);
@@ -671,6 +680,7 @@ function generateSummary() {
     document.getElementById("gems-3").innerText = gemTotals[3] + '/' + GEMS.length;
     document.getElementById("gems-4").innerText = gemTotals[4] + '/' + GEMS.length;
     document.getElementById("gems-5").innerText = gemTotals[5] + '/' + GEMS.length;
+    document.getElementById("gems-6").innerText = gemTotals[6] + '/' + GEMS.length;
 
 
 
@@ -1188,7 +1198,7 @@ function generateItems(sortType) {
     if(sortBox) sortBox.classList.remove("active");
     if(sortBox && sortBox.classList.contains("default-sort")) sortBox.innerText = "⭯";
     if(sortType || sortType == 0) {
-        const SORTS = ["", "id", "name", "seen", "held", "cute", "normal", "hard", "lunar"];
+        const SORTS = ["", "id", "name", "seen", "held", "cute", "normal", "hard", "lunar", "any"];
         if(sortType > SORTS.length) {
             console.error("attempted to sort by out of bounds value");
         }
@@ -1205,6 +1215,8 @@ function generateItems(sortType) {
             }
             else
                 prevSortTypes.items = sortType;
+
+            console.log(`sorting by ${checkVar}`);
 
             itemsArray.sort((a, b) => {
                 if(parseInt(a[checkVar]) || parseInt(a[checkVar]) == 0)
@@ -1223,15 +1235,15 @@ function generateItems(sortType) {
 
     let itemsElem = document.getElementById("item-grid");
     let itemsChildren = itemsElem.children;
-    while(itemsChildren.length > 7)
-        itemsChildren[7].remove();
+    while(itemsChildren.length > 8)
+        itemsChildren[8].remove();
 
     let prevSet = 0;
     for(let i in itemsArray) {
         // add a gap between sets if default sorting
         let curSet = Math.floor(itemsArray[i].id / 8);
         if((!sortType || sortType == 1) && prevSet != curSet) {
-            for(let j = 0; j < 7; j++) {
+            for(let j = 0; j < 8; j++) {
                 let fillElem = document.createElement("div");
                 fillElem.setAttribute("style", "height: 0.5em");
                 itemsElem.appendChild(fillElem);
@@ -1258,9 +1270,11 @@ function generateItems(sortType) {
 
         itemsElem.appendChild(labelElem);
         
-        for(let j = 0; j < 6; j++) {
+        for(let j = 0; j < 7; j++) {
             let valElem = document.createElement("div");
-            valElem.innerText = (vals["ItemDiscovery"][itemsArray[i].key] & Math.pow(2, j)) > 0 ? "X" : "";
+            let val = (vals["ItemDiscovery"][itemsArray[i].key] & Math.pow(2, j)) > 0 ? "X" : "";
+            if(j == 6) val = (vals["ItemDiscovery"][itemsArray[i].key] & 60) > 0 ? "X" : "";
+            valElem.innerText = val;
             
             valElem.setAttribute("style", styleString);
             itemsElem.appendChild(valElem);
@@ -1275,7 +1289,7 @@ function generateGems (sortType) {
     let sortBox = document.getElementById(`sort-g-${Math.abs(prevSortTypes.gems)}`);
     if(sortBox) sortBox.classList.remove("active");
     if(sortType) {
-        const SORTS = ["", "id", "key", "seen", "held", "cute", "normal", "hard", "lunar"];
+        const SORTS = ["", "id", "key", "seen", "held", "cute", "normal", "hard", "lunar", "any"];
         if(sortType > SORTS.length) {
             console.error("attempted to sort by out of bounds value");
         }
@@ -1311,8 +1325,8 @@ function generateGems (sortType) {
 
     let gemsElem = document.getElementById("gems-grid");
     let gemschildren = gemsElem.children;
-    while(gemschildren.length > 7)
-        gemschildren[7].remove();
+    while(gemschildren.length > 8)
+        gemschildren[8].remove();
 
     let cId = -1;
     for(let i in gemsArray) {
@@ -1344,12 +1358,14 @@ function generateGems (sortType) {
 
         gemsElem.appendChild(labelElem);
         
-        for(let j = 0; j < 6; j++) {
+        for(let j = 0; j < 7; j++) {
             let valElem = document.createElement("div");
             if(gemsArray[i].type == 0 && j < 2)
                 valElem.innerText = '-';
+            else if(j == 6)
+                valElem.innerText = (vals["ItemDiscovery"][gemsArray[i].key] & 60) > 0 ? "X" : "";
             else
-                valElem.innerText = (vals["ItemDiscovery"][gemsArray[i].key] & Math.pow(2, j)) > 0 ? "X" : ""
+                valElem.innerText = (vals["ItemDiscovery"][gemsArray[i].key] & Math.pow(2, j)) > 0 ? "X" : "";
 
             valElem.setAttribute("style", styleString);
 
