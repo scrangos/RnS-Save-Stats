@@ -15,7 +15,7 @@
 body {
     margin-left: auto;
     margin-right: auto;
-    width: 44rem;
+    width: 48rem;
     color: var(--color-main);
     background-color: var(--color-bg);
 }
@@ -35,7 +35,7 @@ button {
 .tab-button {
     cursor: pointer;
     user-select: none;
-    padding: 0.5rem 2rem 0.5rem 2rem;
+    padding: 0.5rem 2.5rem 0.5rem 2.5rem;
     border: 2px solid var(--color-main);
     border-radius: 4px;
     background-color: var(--color-bg);
@@ -227,4 +227,15 @@ button {
 }
 .sortbox.active:not(.default-sort) {
     display: contents;
+}
+
+#theme {
+    float: right;
+}
+
+#theme > select {
+    color: var(--color-main);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-main);
+    border-radius: 2px;
 }

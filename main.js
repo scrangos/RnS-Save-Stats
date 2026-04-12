@@ -8,6 +8,7 @@ let prevSortTypes = {
 
 let colorMain = "#000000";
 let colorBg = "#FFFFFF";
+let prevTheme = 0;
 
 
 let rabbitStats = [];
@@ -79,6 +80,21 @@ const wlIds = [
 function init() {
     currentTab = 0;
     buildWLTables();
+    let c1 = localStorage.getItem("color-main");
+    if(!c1) c1 = colorMain;
+    let c2 = localStorage.getItem("color-bg");
+    if(!c2) c2 = colorBg;
+    setColors(c1, c2);
+
+    let t = localStorage.getItem("theme");
+    if(!t && t != 0) {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+            t = 1;
+        else t = 0;
+    }
+    document.getElementById("theme-select").selectedIndex = t;
+    prevTheme = t;
+    handleThemeChange();
 
     // handle dragging files in
     window.addEventListener("drop", (e) => { //process drag&drop behavior
@@ -108,6 +124,8 @@ function setColors(mainColor, bgColor) {
     }
     colorMain = mainColor;
     colorBg = bgColor;
+    localStorage.setItem("color-main", colorMain);
+    localStorage.setItem("color-bg", colorBg);
     const root = document.querySelector(':root');
     root.style.setProperty("--color-main", mainColor);
     root.style.setProperty("--color-bg", bgColor);
@@ -202,6 +220,39 @@ function handleUpload(file) {
         generateRaw();
     }
     reader.readAsText(file);
+}
+
+function handleThemeChange() {
+    const elem = document.getElementById("theme-select");
+    localStorage.setItem("theme", elem.selectedIndex);
+    prevTheme = elem.selectedIndex;
+    switch(elem.selectedIndex) {
+        case 0:
+            setColors("#000000", "#FFFFFF");
+            break;
+        case 1:
+            setColors("#DDDDDD", "#111111");
+            break;
+        default:
+            setColors();
+    }
+}
+
+function promptColor(index) {
+    const elem = document.getElementById("theme-select");
+    let str = prompt(`Enter a hexidecimal color code for ${index ? "the text and borders" : "the background"}:`);
+    const reg = /#([0-9a-fA-F]{3}$|[0-9a-fA-F]{4}$|[0-9a-fA-F]{6}$|[0-9a-fA-F]{8}$)/g;
+    if(!str || str.search(reg) < 0) {
+        if(str) console.error("invalid color string");
+        elem.selectedIndex = prevTheme;
+        return;
+    }
+    if(index) setColors(colorMain, str);
+    else setColors(str, colorBg);
+    elem.selectedIndex = 3;
+    localStorage.setItem("theme", elem.selectedIndex);
+    prevTheme = elem.selectedIndex;
+
 }
 
 function parseVals() {
