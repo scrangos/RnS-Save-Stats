@@ -2,7 +2,7 @@ let file, fileText;
 let vals;
 let currentTab = 0;
 let prevSortTypes = {
-    items: 0,
+    items: 1,
     gems: 1
 }
 
@@ -15,12 +15,8 @@ let gemTotals = [];
 
 const NEVER = 99999999;
 
-const diffs = [
-    "Cute", "Normal", "Hard", "Lunar"
-];
-const types = [
-    "Offline", "Online"
-];
+const diffs = ["Cute", "Normal", "Hard", "Lunar"];
+const types = ["Offline", "Online"];
 
 const wlLabels = [
     [
@@ -186,8 +182,8 @@ function handleUpload(file) {
         generateSummary();
         generateRabbits();
         generateWinLoss();
-        generateItems(0);
-        generateGems(0);
+        generateItems();
+        generateGems();
         generateRaw();
     }
     reader.readAsText(file);
@@ -1190,48 +1186,60 @@ function generateWinLoss() {
     //todo: least dangerous area
 }
 
-function generateItems(sortType) {
-    itemsArray.sort((a, b) => {
+function handleSort(array, sortBy, sortItem, sortType) {
+
+    //clean up from previous sort
+    array.sort((a, b) => {
         return a.id - b.id;
     });
-    let sortBox = document.getElementById(`sort-i-${Math.abs(prevSortTypes.items)}`);
+    let sortBox = document.getElementById(`sort-${sortItem}-${Math.abs(prevSortTypes[sortItem])}`);
     if(sortBox) sortBox.classList.remove("active");
-    if(sortBox && sortBox.classList.contains("default-sort")) sortBox.innerText = "⭯";
-    if(sortType || sortType == 0) {
-        const SORTS = ["", "id", "name", "seen", "held", "cute", "normal", "hard", "lunar", "any"];
-        if(sortType > SORTS.length) {
-            console.error("attempted to sort by out of bounds value");
-        }
-        else {
-            let checkVar = SORTS[sortType];
-            let sortMult = 1;
-            if(sortType == 0) {
-                sortType = 1;
-                checkVar = "id";
-            }
-            if(sortType == prevSortTypes.items) {
-                sortMult = -1;
-                prevSortTypes.items = -sortType;
-            }
-            else
-                prevSortTypes.items = sortType;
 
-            console.log(`sorting by ${checkVar}`);
-
-            itemsArray.sort((a, b) => {
-                if(parseInt(a[checkVar]) || parseInt(a[checkVar]) == 0)
-                    return sortMult * (a[checkVar] - b[checkVar]);
-                return sortMult * (a[checkVar] > b[checkVar] ? 1 : -1);
-            });
-        }
+    //sort
+    if(sortType > sortBy.length) {
+        console.error("attempted to sort by out of bounds value");
     }
-    sortBox = document.getElementById(`sort-i-${Math.abs(prevSortTypes.items)}`);
+    else {
+        let checkVar = sortBy[sortType];
+        let sortMult = 1;
+        
+        if(!sortType && sortType != 0) {
+            sortType = prevSortTypes[sortItem];
+            checkVar = "id";
+        }
+        else if(sortType == prevSortTypes[sortItem]) {
+            sortMult = -1;
+            prevSortTypes[sortItem] = -sortType;
+        }
+        else
+            prevSortTypes[sortItem] = sortType;
+
+        console.log(`sorted by ${checkVar} in ${sortMult > 0 ? "ascending" : "descending"} order`);
+        array.sort((a, b) => {
+            if(parseInt(a[checkVar]) || parseInt(a[checkVar]) == 0)
+                return sortMult * (a[checkVar] - b[checkVar]);
+            if(sortMult > 0) return sortMult * (a[checkVar] > b[checkVar] ? 1 : -1);
+            return sortMult * (a[checkVar] < b[checkVar] ? -1 : 1);
+        });
+    }
+
+    //apply visuals for sort
+    sortBox = document.getElementById(`sort-${sortItem}-${Math.abs(prevSortTypes[sortItem])}`);
     if(sortBox) {
-        if(prevSortTypes.items > 0) sortBox.textContent = '⮟';
-        else if(prevSortTypes.items < 0) sortBox.textContent = '⮝';
+        if(prevSortTypes[sortItem] > 0) sortBox.textContent = '⮟';
+        else if(prevSortTypes[sortItem] < 0) sortBox.textContent = '⮝';
         sortBox.classList.add("active");
     }
 
+
+}
+
+
+function generateItems(sortType) {
+    const SORTBY = ["", "id", "name", "seen", "held", "cute", "normal", "hard", "lunar", "any"];
+    const SORTITEM = "items";
+
+    handleSort(itemsArray, SORTBY, SORTITEM, sortType);
 
     let itemsElem = document.getElementById("item-grid");
     let itemsChildren = itemsElem.children;
@@ -1283,45 +1291,10 @@ function generateItems(sortType) {
 }
 
 function generateGems (sortType) {
-    gemsArray.sort((a, b) => {
-        return a.id - b.id;
-    });
-    let sortBox = document.getElementById(`sort-g-${Math.abs(prevSortTypes.gems)}`);
-    if(sortBox) sortBox.classList.remove("active");
-    if(sortType) {
-        const SORTS = ["", "id", "key", "seen", "held", "cute", "normal", "hard", "lunar", "any"];
-        if(sortType > SORTS.length) {
-            console.error("attempted to sort by out of bounds value");
-        }
-        else {
-            let checkVar = SORTS[sortType];
-            let sortMult = 1;
-            if(sortType == prevSortTypes.gems) {
-                sortMult = -1;
-                prevSortTypes.gems = -sortType;
-            }
-            else
-                prevSortTypes.gems = sortType;
+    const SORTBY = ["", "id", "key", "seen", "held", "cute", "normal", "hard", "lunar", "any"];
+    const SORTITEM = "gems";
 
-            if(sortType == 0) {
-                prevSortTypes.gems = 1;
-                sortMult = 1;
-                checkVar = "id";
-            }
-
-            gemsArray.sort((a, b) => {
-                return sortMult * (a[checkVar] > b[checkVar] ? 1 : -1);
-            });
-        }
-    }
-    sortBox = document.getElementById(`sort-g-${Math.abs(prevSortTypes.gems)}`);
-    if(sortBox) {
-        if(prevSortTypes.gems > 0) sortBox.textContent = '⮟';
-        else if(prevSortTypes.gems < 0) sortBox.textContent = '⮝';
-        sortBox.classList.add("active");
-    }
-
-
+    handleSort(gemsArray, SORTBY, SORTITEM, sortType);
 
     let gemsElem = document.getElementById("gems-grid");
     let gemschildren = gemsElem.children;

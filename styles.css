@@ -20,6 +20,11 @@ body {
     background-color: #FFF;
 }
 
+.tab-button.active {
+    background-color: #000;
+    color: #FFF;
+}
+
 .tab {
     display: none;
 }
@@ -119,7 +124,6 @@ body {
 
 .grid-7 {
     display: grid;
-    max-width: 100%;
     grid-template-columns: auto auto auto auto auto auto auto auto;
 }
 
@@ -173,10 +177,6 @@ body {
     margin-top: 1em;
     margin-bottom: 1em;
     border-radius: 4px;
-}
-
-.tab-button.active {
-    background-color: #DDD;
 }
 
 .default-sort {
