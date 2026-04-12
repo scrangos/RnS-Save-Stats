@@ -121,6 +121,8 @@ function setColors(mainColor, bgColor) {
     if(!mainColor) {
         mainColor = randomColor();
         bgColor = randomColor();
+
+        //todo: ensure main and bgcolor aren't too similar
     }
     colorMain = mainColor;
     colorBg = bgColor;
@@ -224,7 +226,10 @@ function handleUpload(file) {
 
 function handleThemeChange() {
     const elem = document.getElementById("theme-select");
-    localStorage.setItem("theme", elem.selectedIndex);
+    if(elem.selectedIndex == 2)
+        localStorage.setItem("theme", 3);
+    else
+        localStorage.setItem("theme", elem.selectedIndex);
     prevTheme = elem.selectedIndex;
     switch(elem.selectedIndex) {
         case 0:
@@ -233,14 +238,16 @@ function handleThemeChange() {
         case 1:
             setColors("#DDDDDD", "#111111");
             break;
-        default:
+        case 2:
             setColors();
     }
 }
 
 function promptColor(index) {
     const elem = document.getElementById("theme-select");
-    let str = prompt(`Enter a hexidecimal color code for ${index ? "the text and borders" : "the background"}:`);
+    let prevColor = colorMain;
+    if(index) prevColor = colorBg;
+    let str = prompt(`Enter a hexidecimal color code for ${index ? "the background": "the text and borders"} (currently ${prevColor.toUpperCase()}):`);
     const reg = /#([0-9a-fA-F]{3}$|[0-9a-fA-F]{4}$|[0-9a-fA-F]{6}$|[0-9a-fA-F]{8}$)/g;
     if(!str || str.search(reg) < 0) {
         if(str) console.error("invalid color string");

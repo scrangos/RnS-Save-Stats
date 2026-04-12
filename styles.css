@@ -108,7 +108,7 @@ button {
 }
 
 .error-message.active {
-    display: contents;
+    display: block;
 }
 
 .title {
