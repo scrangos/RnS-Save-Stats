@@ -119,10 +119,21 @@ init();
 
 function setColors(mainColor, bgColor) {
     if(!mainColor) {
-        mainColor = randomColor();
+        //randomize colors, and prevent them from being too similar
         bgColor = randomColor();
-
-        //todo: ensure main and bgcolor aren't too similar
+        mainColor = randomColor();
+        if(parseBrightness(bgColor) > 150) {
+            while(parseBrightness(mainColor) > 80) {
+                mainColor = randomColor();
+                // console.log("reroll (main color too bright)");
+            }
+        }
+        else if(parseBrightness(bgColor) < 150) {
+            while(parseBrightness(mainColor) < 200) {
+                mainColor = randomColor();
+                // console.log("reroll (main color too dark)");
+            }
+        }
     }
     colorMain = mainColor;
     colorBg = bgColor;
@@ -233,10 +244,10 @@ function handleThemeChange() {
     prevTheme = elem.selectedIndex;
     switch(elem.selectedIndex) {
         case 0:
-            setColors("#000000", "#FFFFFF");
+            setColors("#222200", "#FFEFFF");
             break;
         case 1:
-            setColors("#DDDDDD", "#111111");
+            setColors("#DDDDDD", "#100F30");
             break;
         case 2:
             setColors();
@@ -254,6 +265,14 @@ function promptColor(index) {
         elem.selectedIndex = prevTheme;
         return;
     }
+
+    //disallow transparencies too low
+    if(!index && parseOpacity(str) < 63) {
+        if(str) console.error("color rejected: too transparent");
+        elem.selectedIndex = prevTheme;
+        return;
+    }
+
     if(index) setColors(colorMain, str);
     else setColors(str, colorBg);
     elem.selectedIndex = 3;
@@ -1382,8 +1401,6 @@ function generateGems (sortType) {
             if(!vals.ItemDiscovery[`mv_${rKey}_0`]) continue;
             cId = gemsArray[i].cId;
 
-            // let styleString = `background:${RABBITS[cId].color};`;
-            // charElem.setAttribute("style", styleString);
             let charElem = document.createElement("div");
 
             charElem.style.setProperty("--color-mix", RABBITS[cId].color);
@@ -1503,4 +1520,24 @@ function blendColor(c1, c2, r1, r2) {
          + Math.floor((green1 * r1 + green2 * r2) / (r1 + r2)).toString(16)
          + Math.floor((blue1 * r1 + blue2 * r2) / (r1 + r2)).toString(16);
     return ret;
+}
+
+function parseBrightness(c) {
+    let red = parseInt(c.substring(1, 3), 16),
+        green = parseInt(c.substring(3, 5), 16),
+        blue = parseInt(c.substring(5, 7), 16);
+    
+    return (Math.max(red, green, blue) + ((red + blue + green) / 3)) / 2;
+}
+
+function parseOpacity(c) {
+    if(c.length == 4 || c.length == 7) return 255;
+    let val;
+    if(c.length == 5) {
+        val = parseInt(c.substring(4, 5), 16);
+        val += val * 16;
+    }
+    else if(c.length == 9)
+        val = parseInt(c.substring(7, 9), 16);
+    return val;
 }
