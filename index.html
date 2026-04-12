@@ -24,6 +24,9 @@
     <input type="file" id="save-upload" onchange="handleUpload()"></input><br>
     <div id="upload-error" class="error-message">Please upload a valid save file (<code>savedata.ini</code>)</div>
     <div>You can find it at <code>C:\Users\USERNAME\AppData\Local\RabbitSteel\SaveFile\savedata.ini</code></div>
+    <button onclick="setColors()">silly</button>
+    <button onclick="setColors('#000000','#FFFFFF')">normal</button>
+    <button onclick="setColors('#DDDDDD','#111111')">dark</button>
 
     <div id="tabs">
         <button class="tab-button active" id="tab-but-0" onclick="changeTab(0)">Summary</button>

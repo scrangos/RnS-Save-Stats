@@ -6,6 +6,9 @@ let prevSortTypes = {
     gems: 1
 }
 
+let colorMain = "#000000";
+let colorBg = "#FFFFFF";
+
 
 let rabbitStats = [];
 let itemsArray = [];
@@ -97,6 +100,18 @@ function init() {
 }
 
 init();
+
+function setColors(mainColor, bgColor) {
+    if(!mainColor) {
+        mainColor = randomColor();
+        bgColor = randomColor();
+    }
+    colorMain = mainColor;
+    colorBg = bgColor;
+    const root = document.querySelector(':root');
+    root.style.setProperty("--color-main", mainColor);
+    root.style.setProperty("--color-bg", bgColor);
+}
 
 function buildWLTables() {
     let gridElem = document.getElementById("wl-grid");
@@ -705,9 +720,8 @@ function generateRabbits() {
         if(!rKeyVal || rKeyVal <= 0) continue;
 
         let rabbitCont = document.createElement("div");
-        let color = blendColor(RABBITS[rabbitStats[i].id].color, "#FFFFFF", 1, 4);
-        let styleString = `background: ${color}`;
-        rabbitCont.setAttribute("style", styleString);
+        rabbitCont.style.setProperty("--color-mix", RABBITS[rabbitStats[i].id].color);
+        rabbitCont.classList.add("mix-bg-1");
         rabbitCont.classList.add("box");
 
         let titleElem = document.createElement("div");
@@ -1187,7 +1201,6 @@ function generateWinLoss() {
 }
 
 function handleSort(array, sortBy, sortItem, sortType) {
-
     //clean up from previous sort
     array.sort((a, b) => {
         return a.id - b.id;
@@ -1214,7 +1227,7 @@ function handleSort(array, sortBy, sortItem, sortType) {
         else
             prevSortTypes[sortItem] = sortType;
 
-        console.log(`sorted by ${checkVar} in ${sortMult > 0 ? "ascending" : "descending"} order`);
+        // console.log(`sorted ${sortItem} by ${checkVar} in ${sortMult > 0 ? "ascending" : "descending"} order`);
         array.sort((a, b) => {
             if(parseInt(a[checkVar]) || parseInt(a[checkVar]) == 0)
                 return sortMult * (a[checkVar] - b[checkVar]);
@@ -1234,7 +1247,6 @@ function handleSort(array, sortBy, sortItem, sortType) {
 
 }
 
-
 function generateItems(sortType) {
     const SORTBY = ["", "id", "name", "seen", "held", "cute", "normal", "hard", "lunar", "any"];
     const SORTITEM = "items";
@@ -1249,15 +1261,15 @@ function generateItems(sortType) {
     let prevSet = 0;
     for(let i in itemsArray) {
         // add a gap between sets if default sorting
-        let curSet = Math.floor(itemsArray[i].id / 8);
-        if((!sortType || sortType == 1) && prevSet != curSet) {
+        let currentSet = Math.floor(itemsArray[i].id / 8);
+        if((!sortType || sortType == 1) && prevSet != currentSet) {
             for(let j = 0; j < 8; j++) {
                 let fillElem = document.createElement("div");
                 fillElem.setAttribute("style", "height: 0.5em");
                 itemsElem.appendChild(fillElem);
             }
         }
-        prevSet = curSet;
+        prevSet = currentSet;
 
         let labelElem = document.createElement("div");
         if(vals["ItemDiscovery"][itemsArray[i].key])
@@ -1267,14 +1279,14 @@ function generateItems(sortType) {
             labelElem.classList.add("unknown");
         }
 
-        let color = SETS[curSet].color;
-        if(itemsArray[i].id % 2 && SETS[curSet].color2) color = SETS[curSet].color2;
-        if(i % 2) color = blendColor(color, "#FFFFFF", 1, 4);
-        else color = blendColor(color, "#FFFFFF", 1, 8);
-        let styleString = `background: ${color}`;
+        let classToAdd = i % 2 ? "mix-bg-2": "mix-bg-3";
+        let color = SETS[currentSet].color;
+        if(itemsArray[i].id % 2 && SETS[currentSet].color2) color = SETS[currentSet].color2;
+        
+        labelElem.style.setProperty("--color-mix", color);
+        labelElem.classList.add(classToAdd);
 
         labelElem.classList.add("grid-left");
-        labelElem.setAttribute("style", styleString);
 
         itemsElem.appendChild(labelElem);
         
@@ -1284,7 +1296,8 @@ function generateItems(sortType) {
             if(j == 6) val = (vals["ItemDiscovery"][itemsArray[i].key] & 60) > 0 ? "X" : "";
             valElem.innerText = val;
             
-            valElem.setAttribute("style", styleString);
+            valElem.style.setProperty("--color-mix", color);
+            valElem.classList.add(classToAdd);
             itemsElem.appendChild(valElem);
         }
     }
@@ -1310,21 +1323,23 @@ function generateGems (sortType) {
             if(!rKey) rKey = RABBITS[gemsArray[i].cId].key;
             if(!vals.ItemDiscovery[`mv_${rKey}_0`]) continue;
             cId = gemsArray[i].cId;
-            let styleString = `background:${RABBITS[cId].color};`;
+
+            // let styleString = `background:${RABBITS[cId].color};`;
+            // charElem.setAttribute("style", styleString);
             let charElem = document.createElement("div");
-            charElem.setAttribute("style", styleString);
+
+            charElem.style.setProperty("--color-mix", RABBITS[cId].color);
+            charElem.classList.add("mix-bg-1");
             charElem.classList.add("fullrow");
             charElem.textContent = RABBITS[cId].name;
             gemsElem.appendChild(charElem);
         }
 
-        let c;
-        if(i % 2) c = blendColor(RABBITS[cId].color, "#FFFFFF", 1, 4);
-        else c = blendColor(RABBITS[cId].color, "#FFFFFF", 1, 16);
-        let styleString = `background:${c}`;
+        let classToAdd = i % 2 ? "mix-bg-2": "mix-bg-3";
 
         let labelElem = document.createElement("div");
-        labelElem.setAttribute("style", styleString);
+        labelElem.style.setProperty("--color-mix", RABBITS[cId].color);
+        labelElem.classList.add(classToAdd);
         labelElem.innerText = `${GEMTYPESCAPS[gemsArray[i].type]} ${ABILITIES[gemsArray[i].slot]}`;
 
         labelElem.classList.add("grid-left");
@@ -1340,7 +1355,8 @@ function generateGems (sortType) {
             else
                 valElem.innerText = (vals["ItemDiscovery"][gemsArray[i].key] & Math.pow(2, j)) > 0 ? "X" : "";
 
-            valElem.setAttribute("style", styleString);
+            valElem.style.setProperty("--color-mix", RABBITS[cId].color);
+            valElem.classList.add(classToAdd);
 
             gemsElem.appendChild(valElem);
         }
@@ -1408,6 +1424,12 @@ function resolveNaN(num) {
     if(num != num)
         return 0;
     return num;
+}
+
+function randomColor() {
+    let ret = Math.floor(Math.random() * Math.pow(16, 6)).toString(16);
+    while(ret.length < 6) ret = "0" + ret;
+    return "#" + ret;
 }
 
 function blendColor(c1, c2, r1, r2) {

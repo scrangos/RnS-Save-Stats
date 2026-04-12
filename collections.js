@@ -1644,7 +1644,7 @@ const SETS = [
     {
         id: "25",
         name: "Glacier",
-        color: "#"
+        color: "#59AAB8"
     },
     {
         id: "26",
