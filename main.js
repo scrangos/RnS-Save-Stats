@@ -486,7 +486,7 @@ function dispRabbit(rId, type, value, elemId, skipIcon) {
     else {
         elem.innerHTML = "";
         let iconElem = document.createElement("img");
-        iconElem.src = `/icons/icon-r${rId}.png`;
+        iconElem.src = `icons/icon-r${rId}.png`;
         iconElem.classList.add("icon", "small");
 
         let textElem = document.createElement("div");
