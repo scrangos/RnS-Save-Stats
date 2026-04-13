@@ -20,6 +20,7 @@ let gemTotals = [];
 const NEVER = 99999999;
 
 const DIFFS = ["Cute", "Normal", "Hard", "Lunar"];
+const DIFFCHARS = "CNHL";
 const TYPES = ["Offline", "Online"];
 
 const wlLabels = [
@@ -47,6 +48,9 @@ const wlLabels = [
         "Aurum Attempts", "Aurum Wins", "Aurum Win Ratio",
         "Sanctum Attempts", "Sanctum Wins", "Sanctum Win Ratio",
         "Hallway Attempts", "Hallway Wins", "Hallway Win Ratio"
+    ],
+    [
+        "True Random Wins", "Chaotic Random Wins", "Combined Random Wins"
     ]
 ];
 const wlIds = [
@@ -74,6 +78,9 @@ const wlIds = [
         "wl-aurum-attempts", "wl-aurum-wins", "wl-aurum-ratio",
         "wl-sanctum-attempts", "wl-sanctum-wins", "wl-sanctum-ratio",
         "wl-hallway-attempts", "wl-hallway-wins", "wl-hallway-ratio"
+    ],
+    [
+        "wl-true-rand", "wl-chaos-rand", "wl-combined-rand"
     ]
 ];
 
@@ -500,53 +507,6 @@ function generateSummary() {
         numWinsPerTypeDiff[i[i.length-3]][i[i.length-1]] += vals["AllyWin"][i];
     }
 
-    // index 1 is Mode: Kingdom, Extra, True Random, or Chaos Random
-    // index 2 is Diff
-    let numWinsPerModeDiff = [
-        [
-            vals["SaveInfo"]["mapWinPinnacleC"],
-            vals["SaveInfo"]["mapWinPinnacleN"],
-            vals["SaveInfo"]["mapWinPinnacleH"],
-            vals["SaveInfo"]["mapWinPinnacleL"]
-        ],
-        [
-            vals["SaveInfo"]["mapWinReflectionC"],
-            vals["SaveInfo"]["mapWinReflectionN"],
-            vals["SaveInfo"]["mapWinReflectionH"],
-            vals["SaveInfo"]["mapWinReflectionL"]
-        ],
-        [
-            vals["SaveInfo"]["mapWinTrueRandC"],
-            vals["SaveInfo"]["mapWinTrueRandN"],
-            vals["SaveInfo"]["mapWinTrueRandH"],
-            vals["SaveInfo"]["mapWinTrueRandL"]
-        ],
-        [
-            vals["SaveInfo"]["mapWinChaosRandC"],
-            vals["SaveInfo"]["mapWinChaosRandN"],
-            vals["SaveInfo"]["mapWinChaosRandH"],
-            vals["SaveInfo"]["mapWinChaosRandL"]
-        ]
-    ];
-
-    // index 1 is Mode: Kingdom or Extra
-    // index 2 is Diff
-    // results are kinda scuffed by true/chaos random runs
-    let numAttemptsPerModeDiff = [
-        [
-            vals["SaveInfo"]["mapVisitOutskirtsC"],
-            vals["SaveInfo"]["mapVisitOutskirtsN"],
-            vals["SaveInfo"]["mapVisitOutskirtsH"],
-            vals["SaveInfo"]["mapVisitOutskirtsL"],
-        ],
-        [
-            vals["SaveInfo"]["mapVisitGeodeC"],
-            vals["SaveInfo"]["mapVisitGeodeN"],
-            vals["SaveInfo"]["mapVisitGeodeH"],
-            vals["SaveInfo"]["mapVisitGeodeL"],
-        ]
-    ];
-
     // an array of classes that have the most wins: total, offline, online
     let mostWins = [];
     rabbitStats.sort((a, b) => {return b.TotalWins - a.TotalWins});
@@ -557,25 +517,6 @@ function generateSummary() {
     
     rabbitStats.sort((a, b) => {return b.OnlineWins - a.OnlineWins});
     mostWins[2] = rabbitStats[0];
-
-    // an array of classes that have the most wins on each diff
-    let mostWinsByDiff = [];
-    for(let i in DIFFS) {
-        rabbitStats.sort((a, b) => {
-            let aWins = a["Offline" + DIFFS[i] + "Count"] + a["Online" + DIFFS[i] + "Count"];
-            let bWins = b["Offline" + DIFFS[i] + "Count"] + a["Online" + DIFFS[i] + "Count"];
-            return bWins - aWins
-        });
-        mostWinsByDiff[i] = [];
-        for(let j in rabbitStats) {
-            if(rabbitStats[j]["Offline" + DIFFS[i] + "Count"]
-                    + rabbitStats[j]["Online" + DIFFS[i] + "Count"]
-                    == rabbitStats[0]["Offline" + DIFFS[i] + "Count"]
-                    + rabbitStats[0]["Online" + DIFFS[i] + "Count"])
-                mostWinsByDiff[i].push(rabbitStats[j]);
-            else break;
-        }
-    }
 
     //an array of classes that have the fastest wins: offline, online
     let fastestWins = [];
@@ -589,40 +530,7 @@ function generateSummary() {
     });
     fastestWins[1] = rabbitStats[0];
 
-    // an array of classes that have the fastest wins on each diff (in case of tie)
-    let fastestWinsByDiff = [];
-    for(let i in DIFFS) {
-
-        // sort by fastest clear on this diff
-        rabbitStats.sort((a, b) => {
-            let aTime0 = a["Offline" + DIFFS[i] + "Fastest"];
-            let aTime1 = a["Online" + DIFFS[i] + "Fastest"];
-            let aTime = getMinIfNotZero(aTime0, aTime1);
-            let bTime0 = b["Offline" + DIFFS[i] + "Fastest"];
-            let bTime1 = b["Online" + DIFFS[i] + "Fastest"];
-            let bTime = getMinIfNotZero(bTime0, bTime1);
-            return aTime - bTime;
-        });
-
-        fastestWinsByDiff[i] = [];
-
-        let oTime0 = rabbitStats[0]["Offline" + DIFFS[i] + "Fastest"];
-        let oTime1 = rabbitStats[0]["Online" + DIFFS[i] + "Fastest"];
-        let oTime = getMinIfNotZero(oTime0, oTime1);
-
-        // save all results that are equal to the fastest
-        for(let j in rabbitStats) {
-
-            let jTime0 = rabbitStats[j]["Offline" + DIFFS[i] + "Fastest"];
-            let jTime1 = rabbitStats[j]["Online" + DIFFS[i] + "Fastest"];
-            let jTime = getMinIfNotZero(jTime0, jTime1);
-
-            if(jTime == oTime)
-                fastestWinsByDiff[i].push(rabbitStats[j]);
-            else break;
-        }
-    }
-
+    // Levitation Ring unlock stuff
     let randWins = vals.SaveInfo.mapWinTrueRandC
             + vals.SaveInfo.mapWinTrueRandN
             + vals.SaveInfo.mapWinTrueRandH
@@ -676,7 +584,24 @@ function generateSummary() {
 
 
     document.getElementById("playtime").innerText = (vals["Playtime"]["Playtime"]/3600).toFixed(1) + " hours";
+    let bosses0 = 0, bosses1 = 0;
+    for(let i in DIFFS) {
+        bosses0 += vals.SaveInfo[`mapWinPinnacle${DIFFCHARS[i]}`];
+        bosses0 += vals.SaveInfo[`mapWinLakeside${DIFFCHARS[i]}`];
+        bosses0 += vals.SaveInfo[`mapWinStreets${DIFFCHARS[i]}`];
+        bosses0 += vals.SaveInfo[`mapWinLighthouse${DIFFCHARS[i]}`];
+        bosses0 += vals.SaveInfo[`mapWinArsenal${DIFFCHARS[i]}`];
+        bosses0 += vals.SaveInfo[`mapWinNest${DIFFCHARS[i]}`];
 
+        bosses1 += vals.SaveInfo[`mapWinSanct${DIFFCHARS[i]}`];
+        bosses1 += vals.SaveInfo[`mapWinDepths${DIFFCHARS[i]}`];
+        bosses1 += vals.SaveInfo[`mapWinAurum${DIFFCHARS[i]}`];
+        bosses1 += vals.SaveInfo[`mapWinReflection${DIFFCHARS[i]}`];
+    }
+    document.getElementById("kingdom-bosses").innerText = bosses0;
+    document.getElementById("extra-bosses").innerText = bosses1;
+
+    
 
     let nAttempts0 = vals["SaveInfo"]["runCountLocal"];
     let nAttempts1 = vals["SaveInfo"]["runCountOnline"];
@@ -777,13 +702,6 @@ function generateSummary() {
     document.getElementById("gems-4").innerText = gemTotals[4] + '/' + GEMS.length;
     document.getElementById("gems-5").innerText = gemTotals[5] + '/' + GEMS.length;
     document.getElementById("gems-6").innerText = gemTotals[6] + '/' + GEMS.length;
-
-
-
-
-
-
-
 }
 
 function generateRabbits() {
@@ -1005,57 +923,16 @@ function generateRabbits() {
 }
 
 function generateWinLoss() {
-    const diffChars = "CNHL";
 
     for(let i in DIFFS) {
-        let attempts = vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`] + vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
-        let wins = vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`] + vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+        let attempts = vals.SaveInfo[`mapVisitOutskirts${DIFFCHARS[i]}`] + vals.SaveInfo[`mapVisitGeode${DIFFCHARS[i]}`];
+        let wins = vals.SaveInfo[`mapWinPinnacle${DIFFCHARS[i]}`] + vals.SaveInfo[`mapWinReflection${DIFFCHARS[i]}`];
         let ratio = '-';
         if(attempts) ratio = (wins / attempts * 100).toFixed(1) + '%';
         if(!attempts && !wins) wins = '-';
         document.getElementById(`wl-attempts-${i}`).innerText = attempts;
         document.getElementById(`wl-wins-${i}`).innerText = wins;
         document.getElementById(`wl-ratio-${i}`).innerText = ratio;
-        
-    //PASTE BEGINS HERE
-    
-        //fastest
-        rabbitStats.sort((a, b) => {
-            return compareIfNotZero(a.FastestWinTime, b.FastestWinTime);
-        });
-        dispRabbit(rabbitStats[0].id, 0, rabbitStats[0].FastestWinTime, `wl-fastest-${4}`, true);
-        
-        //fastest0
-        rabbitStats.sort((a, b) => {
-            return compareIfNotZero(a.FastestOfflineTime, b.FastestOfflineTime);
-        });
-        dispRabbit(rabbitStats[0].id, 0, rabbitStats[0].FastestOfflineTime, `wl-fastest0-${4}`, true);
-
-        //fastest1
-        rabbitStats.sort((a, b) => {
-            return compareIfNotZero(a.FastestOnlineTime, b.FastestOnlineTime);
-        });
-        dispRabbit(rabbitStats[0].id, 0, rabbitStats[0].FastestOnlineTime, `wl-fastest1-${4}`, true);
-        
-        //winnest
-        rabbitStats.sort((a, b) => {
-            return b.TotalWins - a.TotalWins;
-        });
-        dispRabbit(rabbitStats[0].id, 1, rabbitStats[0].TotalWins, `wl-winnest-${4}`, true);
-
-        //winnest0
-        rabbitStats.sort((a, b) => {
-            return b.OfflineWins - a.OfflineWins;
-        });
-        dispRabbit(rabbitStats[0].id, 1, rabbitStats[0].OfflineWins, `wl-winnest0-${4}`, true);
-
-        //winnest1
-        rabbitStats.sort((a, b) => {
-            return b.OnlineWins - a.OnlineWins;
-        });
-        dispRabbit(rabbitStats[0].id, 1, rabbitStats[0].OnlineWins, `wl-winnest1-${4}`, true);
-
-    //PASTE ENDS HERE
 
         //fastest
         rabbitStats.sort((a, b) => {
@@ -1108,8 +985,8 @@ function generateWinLoss() {
         dispRabbit(rabbitStats[0].id, 1, t, `wl-winnest1-${i}`, true);
 
         //kingdom
-        attempts = vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`];
-        wins = vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
+        attempts = vals.SaveInfo[`mapVisitOutskirts${DIFFCHARS[i]}`];
+        wins = vals.SaveInfo[`mapWinPinnacle${DIFFCHARS[i]}`];
         ratio = '-';
         if(attempts) ratio = (wins / attempts * 100).toFixed(1) + '%';
         if(!attempts && !wins) wins = '-';
@@ -1117,18 +994,21 @@ function generateWinLoss() {
         document.getElementById (`wl-kingdom-wins-${i}`).innerText = wins;
         document.getElementById(`wl-kingdom-ratio-${i}`).innerText = ratio;
         //extra
-        attempts = vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
-        wins = vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+        attempts = vals.SaveInfo[`mapVisitGeode${DIFFCHARS[i]}`];
+        wins = vals.SaveInfo[`mapWinReflection${DIFFCHARS[i]}`];
         ratio = '-';
         if(attempts) ratio = (wins / attempts * 100).toFixed(1) + '%';
         if(!attempts && !wins) wins = '-';
         document.getElementById(`wl-extra-attempts-${i}`).innerText = attempts;
         document.getElementById(`wl-extra-wins-${i}`).innerText = wins;
         document.getElementById(`wl-extra-ratio-${i}`).innerText = ratio;
-        //true random
-        //todo
-        //chaotic random
-        //todo
+
+        //randoms
+        document.getElementById(`wl-true-rand-${i}`).innerText = vals.SaveInfo[`mapWinTrueRand${DIFFCHARS[i]}`];
+        document.getElementById(`wl-chaos-rand-${i}`).innerText = vals.SaveInfo[`mapWinChaosRand${DIFFCHARS[i]}`];
+        document.getElementById(`wl-combined-rand-${i}`).innerText = vals.SaveInfo[`mapWinTrueRand${DIFFCHARS[i]}`]
+                + vals.SaveInfo[`mapWinChaosRand${DIFFCHARS[i]}`];
+
 
         let doLocMan = (id, attempts, wins) => {
             let ratio = (wins / attempts * 100).toFixed(1) + '%';
@@ -1142,33 +1022,33 @@ function generateWinLoss() {
             document.getElementById(`wl-${id}-ratio-${i}`).innerText = ratio;
         };
         let doLoc = (id, key) => {
-            let attempts = vals.SaveInfo[`mapVisit${key}${diffChars[i]}`];
-            let wins = vals.SaveInfo[`mapWin${key}${diffChars[i]}`];
+            let attempts = vals.SaveInfo[`mapVisit${key}${DIFFCHARS[i]}`];
+            let wins = vals.SaveInfo[`mapWin${key}${DIFFCHARS[i]}`];
             doLocMan(id, attempts, wins);
         };
 
         //no win count :c
-        doLocMan("outskirts", vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`]);
+        doLocMan("outskirts", vals.SaveInfo[`mapVisitOutskirts${DIFFCHARS[i]}`]);
         doLoc("nest", "Nest");
         doLoc("arsenal", "Arsenal");
         doLoc("darkhouse", "Lighthouse");
         doLoc("churchmouse", "Streets");
         doLoc("lakeside", "Lakeside");
         //manual
-        let keepVisits = vals.SaveInfo[`mapVisitKeep${diffChars[i]}`];
-        let keepWins = vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
+        let keepVisits = vals.SaveInfo[`mapVisitKeep${DIFFCHARS[i]}`];
+        let keepWins = vals.SaveInfo[`mapWinPinnacle${DIFFCHARS[i]}`];
         doLocMan("keep", keepVisits, keepWins);
         //todo: most dangerous area
         //todo: least dangerous area
 
         //no win count :c
-        doLocMan("geode", vals.SaveInfo[`mapVisitGeode${diffChars[i]}`]);
+        doLocMan("geode", vals.SaveInfo[`mapVisitGeode${DIFFCHARS[i]}`]);
         doLoc("depths", "Depths");
         doLoc("aurum", "Aurum");
         doLoc("sanctum", "Sanct");
         //manual
-        let loopVisits = vals.SaveInfo[`mapVisitDarkhall${diffChars[i]}`];
-        let loopWins = vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+        let loopVisits = vals.SaveInfo[`mapVisitDarkhall${DIFFCHARS[i]}`];
+        let loopWins = vals.SaveInfo[`mapWinReflection${DIFFCHARS[i]}`];
         doLocMan("hallway", loopVisits, loopWins);
         //todo: most dangerous area
         //todo: least dangerous area
@@ -1180,13 +1060,17 @@ function generateWinLoss() {
     let geodeVisits = 0;
     let loopVisits = 0;
     let loopWins = 0;
+    let trueRandWins = 0;
+    let chaosRandWins = 0;
     for(let i in DIFFS) {
-        outskirtVisits += vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`];
-        keepVisits += vals.SaveInfo[`mapVisitKeep${diffChars[i]}`];
-        keepWins += vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
-        geodeVisits += vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
-        loopVisits += vals.SaveInfo[`mapVisitDarkhall${diffChars[i]}`];
-        loopWins += vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
+        outskirtVisits += vals.SaveInfo[`mapVisitOutskirts${DIFFCHARS[i]}`];
+        keepVisits += vals.SaveInfo[`mapVisitKeep${DIFFCHARS[i]}`];
+        keepWins += vals.SaveInfo[`mapWinPinnacle${DIFFCHARS[i]}`];
+        geodeVisits += vals.SaveInfo[`mapVisitGeode${DIFFCHARS[i]}`];
+        loopVisits += vals.SaveInfo[`mapVisitDarkhall${DIFFCHARS[i]}`];
+        loopWins += vals.SaveInfo[`mapWinReflection${DIFFCHARS[i]}`];
+        trueRandWins += vals.SaveInfo[`mapWinTrueRand${DIFFCHARS[i]}`];
+        chaosRandWins += vals.SaveInfo[`mapWinChaosRand${DIFFCHARS[i]}`];
     }
     //total
     let attempts = outskirtVisits + geodeVisits;
@@ -1252,10 +1136,11 @@ function generateWinLoss() {
     document.getElementById(`wl-extra-attempts-${4}`).innerText = attempts;
     document.getElementById(`wl-extra-wins-${4}`).innerText = wins;
     document.getElementById(`wl-extra-ratio-${4}`).innerText = ratio;
-    //true random
-    //todo
-    //chaotic random
-    //todo
+
+    //randoms
+    document.getElementById(`wl-true-rand-${4}`).innerText = trueRandWins;
+    document.getElementById(`wl-chaos-rand-${4}`).innerText = chaosRandWins;
+    document.getElementById(`wl-combined-rand-${4}`).innerText = trueRandWins + chaosRandWins;
 
     let doTotalLocMan = (id, attempts, wins) => {
         let ratio = (wins / attempts * 100).toFixed(1) + '%';
@@ -1272,8 +1157,8 @@ function generateWinLoss() {
     let doTotalLoc = (id, key) => {
         let attempts = 0, wins = 0;
         for(let i in DIFFS) {
-            attempts += vals.SaveInfo[`mapVisit${key}${diffChars[i]}`];
-            wins += vals.SaveInfo[`mapWin${key}${diffChars[i]}`];
+            attempts += vals.SaveInfo[`mapVisit${key}${DIFFCHARS[i]}`];
+            wins += vals.SaveInfo[`mapWin${key}${DIFFCHARS[i]}`];
         }
         doTotalLocMan(id, attempts, wins);
     };
