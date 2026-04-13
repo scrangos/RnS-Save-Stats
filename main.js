@@ -19,8 +19,8 @@ let gemTotals = [];
 
 const NEVER = 99999999;
 
-const diffs = ["Cute", "Normal", "Hard", "Lunar"];
-const types = ["Offline", "Online"];
+const DIFFS = ["Cute", "Normal", "Hard", "Lunar"];
+const TYPES = ["Offline", "Online"];
 
 const wlLabels = [
     [
@@ -151,10 +151,10 @@ function buildWLTables() {
     let elem = document.createElement("div");
     elem.classList.add("grid-top");
     gridElem.appendChild(elem);
-    for(let i in diffs) {
+    for(let i in DIFFS) {
         elem = document.createElement("div");
         elem.classList.add("grid-top");
-        elem.innerText = diffs[i];
+        elem.innerText = DIFFS[i];
         gridElem.appendChild(elem);
     }
     elem = document.createElement("div");
@@ -258,7 +258,7 @@ function promptColor(index) {
     const elem = document.getElementById("theme-select");
     let prevColor = colorMain;
     if(index) prevColor = colorBg;
-    let str = prompt(`Enter a hexidecimal color code for ${index ? "the background": "the text and borders"} (currently ${prevColor.toUpperCase()}):`);
+    let str = prompt(`Enter a hexadecimal color code for ${index ? "the background": "the text and borders"} (currently ${prevColor.toUpperCase()}):`);
     const reg = /#([0-9a-fA-F]{3}$|[0-9a-fA-F]{4}$|[0-9a-fA-F]{6}$|[0-9a-fA-F]{8}$)/g;
     if(!str || str.search(reg) < 0) {
         if(str) console.error("invalid color string");
@@ -336,7 +336,7 @@ function processRabbits() {
             if(i.includes(RABBITS[j].key)) {
                 let diff = i[i.length-1];
                 let type = i[i.length-3];
-                rabbitStats[j][types[type] + diffs[diff] + "Count"] = vals["AllyWin"][i];
+                rabbitStats[j][TYPES[type] + DIFFS[diff] + "Count"] = vals["AllyWin"][i];
                 rabbitStats[j]["TotalWins"] += vals["AllyWin"][i];
                 if(type == 0) rabbitStats[j]["OfflineWins"] += vals["AllyWin"][i];
                 else rabbitStats[j]["OnlineWins"] += vals["AllyWin"][i];
@@ -348,7 +348,7 @@ function processRabbits() {
             if(i.includes(RABBITS[j].key)) {
                 let diff = i[i.length-1];
                 let type = i[i.length-3];
-                rabbitStats[j][types[type] + diffs[diff] + "Fastest"] = vals["AllyWinTime"][i];
+                rabbitStats[j][TYPES[type] + DIFFS[diff] + "Fastest"] = vals["AllyWinTime"][i];
                 if(vals["AllyWinTime"][i] > 0) {
                     if(rabbitStats[j].FastestWinTime == NEVER
                             || vals["AllyWinTime"][i] < rabbitStats[j].FastestWinTime) {
@@ -470,6 +470,27 @@ function processItems() {
     }
 }
 
+
+function dispRabbit(rId, type, value, elemId, skipIcon) {
+    const elem = document.getElementById(elemId)
+    if(!value || value == 0 || value == NEVER) { 
+        elem.innerHTML = '-';
+    }
+    else {
+        elem.innerHTML = "";
+        let iconElem = document.createElement("img");
+        iconElem.src = `/icons/icon-r${rId}.png`;
+        iconElem.classList.add("icon", "small");
+
+        let textElem = document.createElement("div");
+        if(type == 1) textElem.innerHTML = RABBITS[rId].name + '<br>' + value;
+        else textElem.innerHTML = RABBITS[rId].name + '<br>' + msToString(value);
+        
+        elem.appendChild(textElem);
+        if(!skipIcon) elem.appendChild(iconElem);
+    }
+}
+
 function generateSummary() {
     // index 1 is Type: offline or online
     // index 2 is Diff
@@ -539,18 +560,18 @@ function generateSummary() {
 
     // an array of classes that have the most wins on each diff
     let mostWinsByDiff = [];
-    for(let i in diffs) {
+    for(let i in DIFFS) {
         rabbitStats.sort((a, b) => {
-            let aWins = a["Offline" + diffs[i] + "Count"] + a["Online" + diffs[i] + "Count"];
-            let bWins = b["Offline" + diffs[i] + "Count"] + a["Online" + diffs[i] + "Count"];
+            let aWins = a["Offline" + DIFFS[i] + "Count"] + a["Online" + DIFFS[i] + "Count"];
+            let bWins = b["Offline" + DIFFS[i] + "Count"] + a["Online" + DIFFS[i] + "Count"];
             return bWins - aWins
         });
         mostWinsByDiff[i] = [];
         for(let j in rabbitStats) {
-            if(rabbitStats[j]["Offline" + diffs[i] + "Count"]
-                    + rabbitStats[j]["Online" + diffs[i] + "Count"]
-                    == rabbitStats[0]["Offline" + diffs[i] + "Count"]
-                    + rabbitStats[0]["Online" + diffs[i] + "Count"])
+            if(rabbitStats[j]["Offline" + DIFFS[i] + "Count"]
+                    + rabbitStats[j]["Online" + DIFFS[i] + "Count"]
+                    == rabbitStats[0]["Offline" + DIFFS[i] + "Count"]
+                    + rabbitStats[0]["Online" + DIFFS[i] + "Count"])
                 mostWinsByDiff[i].push(rabbitStats[j]);
             else break;
         }
@@ -570,30 +591,30 @@ function generateSummary() {
 
     // an array of classes that have the fastest wins on each diff (in case of tie)
     let fastestWinsByDiff = [];
-    for(let i in diffs) {
+    for(let i in DIFFS) {
 
         // sort by fastest clear on this diff
         rabbitStats.sort((a, b) => {
-            let aTime0 = a["Offline" + diffs[i] + "Fastest"];
-            let aTime1 = a["Online" + diffs[i] + "Fastest"];
+            let aTime0 = a["Offline" + DIFFS[i] + "Fastest"];
+            let aTime1 = a["Online" + DIFFS[i] + "Fastest"];
             let aTime = getMinIfNotZero(aTime0, aTime1);
-            let bTime0 = b["Offline" + diffs[i] + "Fastest"];
-            let bTime1 = b["Online" + diffs[i] + "Fastest"];
+            let bTime0 = b["Offline" + DIFFS[i] + "Fastest"];
+            let bTime1 = b["Online" + DIFFS[i] + "Fastest"];
             let bTime = getMinIfNotZero(bTime0, bTime1);
             return aTime - bTime;
         });
 
         fastestWinsByDiff[i] = [];
 
-        let oTime0 = rabbitStats[0]["Offline" + diffs[i] + "Fastest"];
-        let oTime1 = rabbitStats[0]["Online" + diffs[i] + "Fastest"];
+        let oTime0 = rabbitStats[0]["Offline" + DIFFS[i] + "Fastest"];
+        let oTime1 = rabbitStats[0]["Online" + DIFFS[i] + "Fastest"];
         let oTime = getMinIfNotZero(oTime0, oTime1);
 
         // save all results that are equal to the fastest
         for(let j in rabbitStats) {
 
-            let jTime0 = rabbitStats[j]["Offline" + diffs[i] + "Fastest"];
-            let jTime1 = rabbitStats[j]["Online" + diffs[i] + "Fastest"];
+            let jTime0 = rabbitStats[j]["Offline" + DIFFS[i] + "Fastest"];
+            let jTime1 = rabbitStats[j]["Online" + DIFFS[i] + "Fastest"];
             let jTime = getMinIfNotZero(jTime0, jTime1);
 
             if(jTime == oTime)
@@ -686,29 +707,16 @@ function generateSummary() {
     document.getElementById("shopratio-1").innerText = (shopRatio0).toFixed(2);
     document.getElementById("shopratio-2").innerText = (shopRatio1).toFixed(2);
 
-    let fastest0 = fastestWins[0].FastestOfflineTime;
-    if(!fastest0 || fastest0 == NEVER) fastest0 = '-';
-    else fastest0 = RABBITS[fastestWins[0].id].name + '<br>' + msToString(fastest0);
-    let fastest1 = fastestWins[1].FastestOnlineTime;
-    if(!fastest1 || fastest1 == NEVER) fastest1 = '-';
-    else fastest1 = RABBITS[fastestWins[1].id].name + '<br>' + msToString(fastest1);
-    document.getElementById("fastest0-1").innerHTML = fastest0
-    document.getElementById("fastest0-2").innerHTML = fastest1;
+    // Fastest / most win records
 
-    let winnest0 = mostWins[0].TotalWins,
-        winnest1 = mostWins[1].OfflineWins,
-        winnest2 = mostWins[2].OnlineWins;
-    if(!winnest0) winnest0 = '-';
-    else winnest0 = RABBITS[mostWins[0].id].name + '<br>' + mostWins[0].TotalWins;
-    if(!winnest1) winnest1 = '-';
-    else winnest1 = RABBITS[mostWins[1].id].name + '<br>' + mostWins[1].OfflineWins;
-    if(!winnest2) winnest2 = '-';
-    else winnest2 = RABBITS[mostWins[2].id].name + '<br>' + mostWins[2].OnlineWins;
-    document.getElementById("winnest0-0").innerHTML = winnest0;
-    document.getElementById("winnest0-1").innerHTML = winnest1
-    document.getElementById("winnest0-2").innerHTML = winnest2;
-
+    dispRabbit(fastestWins[0].id, 0, fastestWins[0].FastestOfflineTime, "fastest0-1");
+    dispRabbit(fastestWins[1].id, 0, fastestWins[0].FastestOnlineTime, "fastest0-2");
     
+    dispRabbit(mostWins[0].id, 1, mostWins[0].TotalWins, "winnest0-0");
+    dispRabbit(mostWins[1].id, 1, mostWins[1].OfflineWins, "winnest0-1");
+    dispRabbit(mostWins[2].id, 1, mostWins[2].OnlineWins, "winnest0-2");
+
+    // basic win/loss records
     document.getElementById("kingdomattempts-0").innerText = vals["SaveInfo"]["mapVisitOutskirtsC"];
     document.getElementById("kingdomattempts-1").innerText = vals["SaveInfo"]["mapVisitOutskirtsN"];
     document.getElementById("kingdomattempts-2").innerText = vals["SaveInfo"]["mapVisitOutskirtsH"];
@@ -805,6 +813,12 @@ function generateRabbits() {
         titleElem.classList.add("title");
         titleElem.textContent = RABBITS[rabbitStats[i].id].name;
 
+        let iconElem = document.createElement("img");
+        iconElem.src = `icons/icon-r${rabbitStats[i].id}.png`;
+        iconElem.classList.add("right");
+        iconElem.classList.add("icon");
+        
+        rabbitCont.appendChild(iconElem);
         rabbitCont.appendChild(titleElem);
 
         //per rabbit: 
@@ -817,10 +831,10 @@ function generateRabbits() {
         elem.classList.add("grid-top");
         elem.innerText = "";
         gridElem.appendChild(elem);
-        for(let j in diffs) {
+        for(let j in DIFFS) {
             elem = document.createElement("div");
             elem.classList.add("grid-top");
-            elem.innerText = diffs[j];
+            elem.innerText = DIFFS[j];
             gridElem.appendChild(elem);
         }
         elem = document.createElement("div");
@@ -833,11 +847,11 @@ function generateRabbits() {
         elem.classList.add("grid-left");
         elem.innerText = "Total Clears";
         gridElem.appendChild(elem);
-        for(let j in diffs) {
+        for(let j in DIFFS) {
             elem = document.createElement("div");
             let total = 0;
-            let v1 = rabbitStats[i][`Offline${diffs[j]}Count`];
-            let v2 = rabbitStats[i][`Online${diffs[j]}Count`];
+            let v1 = rabbitStats[i][`Offline${DIFFS[j]}Count`];
+            let v2 = rabbitStats[i][`Online${DIFFS[j]}Count`];
             if(v1) total += v1;
             if(v2) total += v2;
             elem.innerText = total;
@@ -852,11 +866,11 @@ function generateRabbits() {
         elem.classList.add("grid-left");
         elem.innerText = "Offline Clears";
         gridElem.appendChild(elem);
-        for(let j in diffs) {
+        for(let j in DIFFS) {
             elem = document.createElement("div");
             let total = 0;
-            if(rabbitStats[i][`Offline${diffs[j]}Count`])
-                total = rabbitStats[i][`Offline${diffs[j]}Count`];
+            if(rabbitStats[i][`Offline${DIFFS[j]}Count`])
+                total = rabbitStats[i][`Offline${DIFFS[j]}Count`];
             elem.innerText = total;
             gridElem.appendChild(elem);
         }
@@ -869,11 +883,11 @@ function generateRabbits() {
         elem.classList.add("grid-left");
         elem.innerText = "Online Clears";
         gridElem.appendChild(elem);
-        for(let j in diffs) {
+        for(let j in DIFFS) {
             elem = document.createElement("div");
             let total = 0;
-            if(rabbitStats[i][`Online${diffs[j]}Count`])
-                total = rabbitStats[i][`Online${diffs[j]}Count`];
+            if(rabbitStats[i][`Online${DIFFS[j]}Count`])
+                total = rabbitStats[i][`Online${DIFFS[j]}Count`];
             elem.innerText = total;
             gridElem.appendChild(elem);
         }
@@ -886,9 +900,9 @@ function generateRabbits() {
         elem.classList.add("grid-left");
         elem.innerText = "Offline Fastest";
         gridElem.appendChild(elem);
-        for(let j in diffs) {
+        for(let j in DIFFS) {
             elem = document.createElement("div");
-            let t = rabbitStats[i][`Offline${diffs[j]}Fastest`];
+            let t = rabbitStats[i][`Offline${DIFFS[j]}Fastest`];
             if(t) elem.innerText = msToString(t);
             else elem.innerText = '-';
             gridElem.appendChild(elem);
@@ -905,9 +919,9 @@ function generateRabbits() {
         elem.classList.add("grid-left");
         elem.innerText = "Online Fastest";
         gridElem.appendChild(elem);
-        for(let j in diffs) {
+        for(let j in DIFFS) {
             elem = document.createElement("div");
-            let t = rabbitStats[i][`Online${diffs[j]}Fastest`];
+            let t = rabbitStats[i][`Online${DIFFS[j]}Fastest`];
             if(t) elem.innerText = msToString(t);
             else elem.innerText = '-';
             gridElem.appendChild(elem);
@@ -956,10 +970,10 @@ function generateRabbits() {
         elem.classList.add("grid-top");
         elem.innerText = "Purchased";
         gridElem.appendChild(elem);
-        for(let j in diffs) {
+        for(let j in DIFFS) {
             elem = document.createElement("div");
             elem.classList.add("grid-top");
-            elem.innerHTML = diffs[j] + "<br>Cleared";
+            elem.innerHTML = DIFFS[j] + "<br>Cleared";
             gridElem.appendChild(elem);
         }
 
@@ -993,7 +1007,7 @@ function generateRabbits() {
 function generateWinLoss() {
     const diffChars = "CNHL";
 
-    for(let i in diffs) {
+    for(let i in DIFFS) {
         let attempts = vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`] + vals.SaveInfo[`mapVisitGeode${diffChars[i]}`];
         let wins = vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`] + vals.SaveInfo[`mapWinReflection${diffChars[i]}`];
         let ratio = '-';
@@ -1003,67 +1017,95 @@ function generateWinLoss() {
         document.getElementById(`wl-wins-${i}`).innerText = wins;
         document.getElementById(`wl-ratio-${i}`).innerText = ratio;
         
+    //PASTE BEGINS HERE
+    
         //fastest
         rabbitStats.sort((a, b) => {
-            let aT = getMinIfNotZero(a[`Offline${diffs[i]}Fastest`], a[`Online${diffs[i]}Fastest`]);
-            let bT = getMinIfNotZero(b[`Offline${diffs[i]}Fastest`], b[`Online${diffs[i]}Fastest`]);
-            return compareIfNotZero(aT, bT);
+            return compareIfNotZero(a.FastestWinTime, b.FastestWinTime);
         });
-        let t = getMinIfNotZero(rabbitStats[0][`Offline${diffs[i]}Fastest`], rabbitStats[0][`Online${diffs[i]}Fastest`]);
-        let str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-        if(t == 0 || !t || t == NEVER) str = '-';
-        document.getElementById(`wl-fastest-${i}`).innerHTML = str;
+        dispRabbit(rabbitStats[0].id, 0, rabbitStats[0].FastestWinTime, `wl-fastest-${4}`, true);
         
         //fastest0
         rabbitStats.sort((a, b) => {
-            return compareIfNotZero(a[`Offline${diffs[i]}Fastest`], b[`Offline${diffs[i]}Fastest`]);
+            return compareIfNotZero(a.FastestOfflineTime, b.FastestOfflineTime);
         });
-        t = rabbitStats[0][`Offline${diffs[i]}Fastest`];
-        str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-        if(t == 0 || !t || t == NEVER) str = '-';
-        document.getElementById(`wl-fastest0-${i}`).innerHTML = str;
+        dispRabbit(rabbitStats[0].id, 0, rabbitStats[0].FastestOfflineTime, `wl-fastest0-${4}`, true);
 
         //fastest1
         rabbitStats.sort((a, b) => {
-            return compareIfNotZero(a[`Online${diffs[i]}Fastest`], b[`Online${diffs[i]}Fastest`]);
+            return compareIfNotZero(a.FastestOnlineTime, b.FastestOnlineTime);
         });
-        t = rabbitStats[0][`Online${diffs[i]}Fastest`];
-        str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-        if(t == 0 || !t || t == NEVER) str = '-';
-        document.getElementById(`wl-fastest1-${i}`).innerHTML = str;
+        dispRabbit(rabbitStats[0].id, 0, rabbitStats[0].FastestOnlineTime, `wl-fastest1-${4}`, true);
         
         //winnest
         rabbitStats.sort((a, b) => {
-            let aW = a[`Offline${diffs[i]}Count`] + a[`Online${diffs[i]}Count`];
-            let bW = b[`Offline${diffs[i]}Count`] + b[`Online${diffs[i]}Count`];
-            return bW - aW;
+            return b.TotalWins - a.TotalWins;
         });
-        t = rabbitStats[0][`Offline${diffs[i]}Count`] + rabbitStats[0][`Online${diffs[i]}Count`];
-        str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-        if(t == 0 || !t) str = '-';
-        document.getElementById(`wl-winnest-${i}`).innerHTML = str;
+        dispRabbit(rabbitStats[0].id, 1, rabbitStats[0].TotalWins, `wl-winnest-${4}`, true);
 
         //winnest0
         rabbitStats.sort((a, b) => {
-            let aW = a[`Offline${diffs[i]}Count`];
-            let bW = b[`Offline${diffs[i]}Count`];
-            return bW - aW;
+            return b.OfflineWins - a.OfflineWins;
         });
-        t = rabbitStats[0][`Offline${diffs[i]}Count`];
-        str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-        if(t == 0 || !t) str = '-';
-        document.getElementById(`wl-winnest0-${i}`).innerHTML = str;
+        dispRabbit(rabbitStats[0].id, 1, rabbitStats[0].OfflineWins, `wl-winnest0-${4}`, true);
 
         //winnest1
         rabbitStats.sort((a, b) => {
-            let aW = a[`Online${diffs[i]}Count`];
-            let bW = b[`Online${diffs[i]}Count`];
+            return b.OnlineWins - a.OnlineWins;
+        });
+        dispRabbit(rabbitStats[0].id, 1, rabbitStats[0].OnlineWins, `wl-winnest1-${4}`, true);
+
+    //PASTE ENDS HERE
+
+        //fastest
+        rabbitStats.sort((a, b) => {
+            let aT = getMinIfNotZero(a[`Offline${DIFFS[i]}Fastest`], a[`Online${DIFFS[i]}Fastest`]);
+            let bT = getMinIfNotZero(b[`Offline${DIFFS[i]}Fastest`], b[`Online${DIFFS[i]}Fastest`]);
+            return compareIfNotZero(aT, bT);
+        });
+        let t = getMinIfNotZero(rabbitStats[0][`Offline${DIFFS[i]}Fastest`], rabbitStats[0][`Online${DIFFS[i]}Fastest`]);
+        dispRabbit(rabbitStats[0].id, 0, t, `wl-fastest-${i}`, true);
+        
+        //fastest0
+        rabbitStats.sort((a, b) => {
+            return compareIfNotZero(a[`Offline${DIFFS[i]}Fastest`], b[`Offline${DIFFS[i]}Fastest`]);
+        });
+        t = rabbitStats[0][`Offline${DIFFS[i]}Fastest`];
+        dispRabbit(rabbitStats[0].id, 0, t, `wl-fastest0-${i}`, true);
+
+        //fastest1
+        rabbitStats.sort((a, b) => {
+            return compareIfNotZero(a[`Online${DIFFS[i]}Fastest`], b[`Online${DIFFS[i]}Fastest`]);
+        });
+        t = rabbitStats[0][`Online${DIFFS[i]}Fastest`];
+        dispRabbit(rabbitStats[0].id, 0, t, `wl-fastest1-${i}`, true);
+        
+        //winnest
+        rabbitStats.sort((a, b) => {
+            let aW = a[`Offline${DIFFS[i]}Count`] + a[`Online${DIFFS[i]}Count`];
+            let bW = b[`Offline${DIFFS[i]}Count`] + b[`Online${DIFFS[i]}Count`];
             return bW - aW;
         });
-        t = rabbitStats[0][`Online${diffs[i]}Count`];
-        str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-        if(t == 0 || !t) str = '-';
-        document.getElementById(`wl-winnest1-${i}`).innerHTML = str;
+        t = rabbitStats[0][`Offline${DIFFS[i]}Count`] + rabbitStats[0][`Online${DIFFS[i]}Count`];
+        dispRabbit(rabbitStats[0].id, 1, t, `wl-winnest-${i}`, true);
+
+        //winnest0
+        rabbitStats.sort((a, b) => {
+            let aW = a[`Offline${DIFFS[i]}Count`];
+            let bW = b[`Offline${DIFFS[i]}Count`];
+            return bW - aW;
+        });
+        t = rabbitStats[0][`Offline${DIFFS[i]}Count`];
+        dispRabbit(rabbitStats[0].id, 1, t, `wl-winnest0-${i}`, true);
+
+        //winnest1
+        rabbitStats.sort((a, b) => {
+            let aW = a[`Online${DIFFS[i]}Count`];
+            let bW = b[`Online${DIFFS[i]}Count`];
+            return bW - aW;
+        });
+        t = rabbitStats[0][`Online${DIFFS[i]}Count`];
+        dispRabbit(rabbitStats[0].id, 1, t, `wl-winnest1-${i}`, true);
 
         //kingdom
         attempts = vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`];
@@ -1138,7 +1180,7 @@ function generateWinLoss() {
     let geodeVisits = 0;
     let loopVisits = 0;
     let loopWins = 0;
-    for(let i in diffs) {
+    for(let i in DIFFS) {
         outskirtVisits += vals.SaveInfo[`mapVisitOutskirts${diffChars[i]}`];
         keepVisits += vals.SaveInfo[`mapVisitKeep${diffChars[i]}`];
         keepWins += vals.SaveInfo[`mapWinPinnacle${diffChars[i]}`];
@@ -1160,55 +1202,37 @@ function generateWinLoss() {
     rabbitStats.sort((a, b) => {
         return compareIfNotZero(a.FastestWinTime, b.FastestWinTime);
     });
-    let t = rabbitStats[0][`FastestWinTime`];
-    let str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-    if(t == 0 || !t || t == NEVER) str = '-';
-    document.getElementById(`wl-fastest-${4}`).innerHTML = str;
+    dispRabbit(rabbitStats[0].id, 0, rabbitStats[0].FastestWinTime, `wl-fastest-${4}`, true);
     
     //fastest0
     rabbitStats.sort((a, b) => {
         return compareIfNotZero(a.FastestOfflineTime, b.FastestOfflineTime);
     });
-    t = rabbitStats[0][`FastestOfflineTime`];
-    str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-    if(t == 0 || !t || t == NEVER) str = '-';
-    document.getElementById(`wl-fastest0-${4}`).innerHTML = str;
+    dispRabbit(rabbitStats[0].id, 0, rabbitStats[0].FastestOfflineTime, `wl-fastest0-${4}`, true);
 
     //fastest1
     rabbitStats.sort((a, b) => {
         return compareIfNotZero(a.FastestOnlineTime, b.FastestOnlineTime);
     });
-    t = rabbitStats[0][`FastestOnlineTime`];
-    str = RABBITS[rabbitStats[0].id].name + '<br>' + msToString(t);
-    if(t == 0 || !t || t == NEVER) str = '-';
-    document.getElementById(`wl-fastest1-${4}`).innerHTML = str;
+    dispRabbit(rabbitStats[0].id, 0, rabbitStats[0].FastestOnlineTime, `wl-fastest1-${4}`, true);
     
     //winnest
     rabbitStats.sort((a, b) => {
         return b.TotalWins - a.TotalWins;
     });
-    t = rabbitStats[0][`TotalWins`];
-    str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-    if(t == 0 || !t) str = '-';
-    document.getElementById(`wl-winnest-${4}`).innerHTML = str;
+    dispRabbit(rabbitStats[0].id, 1, rabbitStats[0].TotalWins, `wl-winnest-${4}`, true);
 
     //winnest0
     rabbitStats.sort((a, b) => {
         return b.OfflineWins - a.OfflineWins;
     });
-    t = rabbitStats[0][`OfflineWins`];
-    str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-    if(t == 0 || !t) str = '-';
-    document.getElementById(`wl-winnest0-${4}`).innerHTML = str;
+    dispRabbit(rabbitStats[0].id, 1, rabbitStats[0].OfflineWins, `wl-winnest0-${4}`, true);
 
     //winnest1
     rabbitStats.sort((a, b) => {
         return b.OnlineWins - a.OnlineWins;
     });
-    t = rabbitStats[0][`OnlineWins`];
-    str = `${RABBITS[rabbitStats[0].id].name}<br>${t}`;
-    if(t == 0 || !t) str = '-';
-    document.getElementById(`wl-winnest1-${4}`).innerHTML = str;
+    dispRabbit(rabbitStats[0].id, 1, rabbitStats[0].OnlineWins, `wl-winnest1-${4}`, true);
 
     //kingdom
     attempts = outskirtVisits;
@@ -1247,7 +1271,7 @@ function generateWinLoss() {
     };
     let doTotalLoc = (id, key) => {
         let attempts = 0, wins = 0;
-        for(let i in diffs) {
+        for(let i in DIFFS) {
             attempts += vals.SaveInfo[`mapVisit${key}${diffChars[i]}`];
             wins += vals.SaveInfo[`mapWin${key}${diffChars[i]}`];
         }
