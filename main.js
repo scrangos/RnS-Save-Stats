@@ -22,6 +22,10 @@ const NEVER = 99999999;
 const DIFFS = ["Cute", "Normal", "Hard", "Lunar"];
 const DIFFCHARS = "CNHL";
 const TYPES = ["Offline", "Online"];
+const KINGDOMAREACODES = ["Outskirts", "Nest", "Arsenal", "Lighthouse", "Streets", "Lakeside", "Pinnacle"];
+const EXTRAAREACODES = ["Geode", "Depths", "Aurum", "Sanct", "Reflection"];
+const KINGDOMAREANAMES = ["Outskirts", "Nest", "Arsenal", "Darkhouse", "Churchmouse", "Lakeside", "Pale Keep"];
+const EXTRAAREANAMES = ["Geode", "Depths", "Aurum", "Sancum", "Hallway"];
 
 const wlLabels = [
     [
@@ -32,6 +36,10 @@ const wlLabels = [
     [
         "Kingdom Attempts", "Kingdom Wins", "Kingdom Win Ratio",
         "Extra Attempts", "Extra Wins", "Extra Win Ratio"
+    ],
+    [
+        "Safest\nKingdom Area", "Most Dangerous\nKingdom Area",
+        "Safest\nExtra Area", "Most Dangerous\nExtra Area"
     ],
     [
         "Outskirts Attempts", "Outskirts Wins", "Outskirts Win Ratio",
@@ -62,6 +70,10 @@ const wlIds = [
     [
         "wl-kingdom-attempts", "wl-kingdom-wins", "wl-kingdom-ratio",
         "wl-extra-attempts", "wl-extra-wins", "wl-extra-ratio"
+    ],
+    [
+        "wl-safest-kingdom", "wl-dangerousest-kingdom",
+        "wl-safest-extra", "wl-dangerousest-extra"
     ],
     [
         "wl-outskirts-attempts", "wl-outskirts-wins", "wl-outskirts-ratio",
@@ -477,9 +489,8 @@ function processItems() {
     }
 }
 
-
 function dispRabbit(rId, type, value, elemId, skipIcon) {
-    const elem = document.getElementById(elemId)
+    const elem = document.getElementById(elemId);
     if(!value || value == 0 || value == NEVER) { 
         elem.innerHTML = '-';
     }
@@ -496,6 +507,28 @@ function dispRabbit(rId, type, value, elemId, skipIcon) {
         elem.appendChild(textElem);
         if(!skipIcon) elem.appendChild(iconElem);
     }
+}
+
+function dispArea(mode, aId, ratio, elemId, skipIcon) {
+    const elem = document.getElementById(elemId);
+    if(ratio < 0) { 
+        elem.innerHTML = '-';
+    }
+    else {
+        elem.innerHTML = "";
+        let disp = (ratio * 100).toFixed(1) + '%';
+        // let iconElem = document.createElement("img");
+        // iconElem.src = `icons/icon-a${aId}.png`;
+        // iconElem.classList.add("icon", "small");
+
+        let textElem = document.createElement("div");
+        if(mode == 0) textElem.innerHTML = KINGDOMAREANAMES[aId] + '<br>' + disp;
+        else textElem.innerHTML = EXTRAAREANAMES[aId] + '<br>' + disp;
+        
+        elem.appendChild(textElem);
+        // if(!skipIcon) elem.appendChild(iconElem);
+    }
+
 }
 
 function generateSummary() {
@@ -1003,6 +1036,56 @@ function generateWinLoss() {
         document.getElementById(`wl-extra-wins-${i}`).innerText = wins;
         document.getElementById(`wl-extra-ratio-${i}`).innerText = ratio;
 
+        //safest & most dangerous area
+        let safeKingdomArea = -1,
+            safeExtraArea = -1,
+            dangerKingdomArea = -1,
+            dangerExtraArea = -1,
+            safeKingdomRatio = 0,
+            safeExtraRatio = 0,
+            dangerExtraRatio = 1,
+            dangerKingdomRatio = 1;
+        
+        for(let j in KINGDOMAREACODES) {
+            if(j == 0) continue; //skip outskirts
+            let visits = vals.SaveInfo[`mapVisit${KINGDOMAREACODES[j]}${DIFFCHARS[i]}`];
+            if(KINGDOMAREACODES[j] == "Pinnacle") visits = vals.SaveInfo[`mapVisitKeep${DIFFCHARS[i]}`];
+            if(!visits) continue;
+            let wins = vals.SaveInfo[`mapWin${KINGDOMAREACODES[j]}${DIFFCHARS[i]}`];
+            let ratio = wins / visits;
+            if(ratio >= safeKingdomRatio) {
+                safeKingdomArea = j;
+                safeKingdomRatio = ratio;
+            }
+            if(ratio <= dangerKingdomRatio) {
+                dangerKingdomArea = j;
+                dangerKingdomRatio = ratio;
+            }
+        }
+        
+        for(let j in EXTRAAREACODES) {
+            if(j == 0) continue; //skip geode
+            let visits = vals.SaveInfo[`mapVisit${EXTRAAREACODES[j]}${DIFFCHARS[i]}`];
+            if(EXTRAAREACODES[j] == "Reflection") visits = vals.SaveInfo[`mapVisitDarkhall${DIFFCHARS[i]}`];
+            if(!visits) continue;
+            let wins = vals.SaveInfo[`mapWin${EXTRAAREACODES[j]}${DIFFCHARS[i]}`];
+            let ratio = wins / visits;
+            if(ratio >= safeExtraRatio) {
+                safeExtraArea = j;
+                safeExtraRatio = ratio;
+            }
+            if(ratio <= dangerExtraRatio) {
+                dangerExtraArea = j;
+                dangerExtraRatio = ratio;
+            }
+        }
+
+        dispArea(0, safeKingdomArea, safeKingdomRatio, `wl-safest-kingdom-${i}`);
+        dispArea(0, dangerKingdomArea, dangerKingdomRatio, `wl-dangerousest-kingdom-${i}`);
+        dispArea(1, safeExtraArea, safeExtraRatio, `wl-safest-extra-${i}`);
+        dispArea(1, dangerExtraArea, dangerExtraRatio, `wl-dangerousest-extra-${i}`);
+
+
         //randoms
         document.getElementById(`wl-true-rand-${i}`).innerText = vals.SaveInfo[`mapWinTrueRand${DIFFCHARS[i]}`];
         document.getElementById(`wl-chaos-rand-${i}`).innerText = vals.SaveInfo[`mapWinChaosRand${DIFFCHARS[i]}`];
@@ -1038,8 +1121,6 @@ function generateWinLoss() {
         let keepVisits = vals.SaveInfo[`mapVisitKeep${DIFFCHARS[i]}`];
         let keepWins = vals.SaveInfo[`mapWinPinnacle${DIFFCHARS[i]}`];
         doLocMan("keep", keepVisits, keepWins);
-        //todo: most dangerous area
-        //todo: least dangerous area
 
         //no win count :c
         doLocMan("geode", vals.SaveInfo[`mapVisitGeode${DIFFCHARS[i]}`]);
@@ -1050,8 +1131,6 @@ function generateWinLoss() {
         let loopVisits = vals.SaveInfo[`mapVisitDarkhall${DIFFCHARS[i]}`];
         let loopWins = vals.SaveInfo[`mapWinReflection${DIFFCHARS[i]}`];
         doLocMan("hallway", loopVisits, loopWins);
-        //todo: most dangerous area
-        //todo: least dangerous area
     }
 
     let outskirtVisits = 0;
@@ -1136,6 +1215,63 @@ function generateWinLoss() {
     document.getElementById(`wl-extra-attempts-${4}`).innerText = attempts;
     document.getElementById(`wl-extra-wins-${4}`).innerText = wins;
     document.getElementById(`wl-extra-ratio-${4}`).innerText = ratio;
+    
+    //safest & most dangerous area
+    let safeKingdomArea = -1,
+        safeExtraArea = -1,
+        dangerKingdomArea = -1,
+        dangerExtraArea = -1,
+        safeKingdomRatio = 0,
+        safeExtraRatio = 0,
+        dangerExtraRatio = 1,
+        dangerKingdomRatio = 1;
+    
+    for(let j in KINGDOMAREACODES) {
+        if(j == 0) continue; //skip outskirts
+        let visits = 0;
+        let wins = 0;
+        for(i in DIFFS) {
+            visits += vals.SaveInfo[`mapVisit${KINGDOMAREACODES[j]}${DIFFCHARS[i]}`];
+            if(KINGDOMAREACODES[j] == "Pinnacle") visits += vals.SaveInfo[`mapVisitKeep${DIFFCHARS[i]}`];
+            wins += vals.SaveInfo[`mapWin${KINGDOMAREACODES[j]}${DIFFCHARS[i]}`];
+        }
+        if(!visits) continue;
+        let ratio = wins / visits;
+        if(ratio >= safeKingdomRatio) {
+            safeKingdomArea = j;
+            safeKingdomRatio = ratio;
+        }
+        if(ratio <= dangerKingdomRatio) {
+            dangerKingdomArea = j;
+            dangerKingdomRatio = ratio;
+        }
+    }
+    
+    for(let j in EXTRAAREACODES) {
+        if(j == 0) continue; //skip geode
+        let visits = 0;
+        let wins = 0;
+        for(i in DIFFS) {
+            visits += vals.SaveInfo[`mapVisit${EXTRAAREACODES[j]}${DIFFCHARS[i]}`];
+            if(EXTRAAREACODES[j] == "Reflection") visits += vals.SaveInfo[`mapVisitDarkhall${DIFFCHARS[i]}`];
+            wins += vals.SaveInfo[`mapWin${EXTRAAREACODES[j]}${DIFFCHARS[i]}`];
+        }
+        if(!visits) continue;
+        let ratio = wins / visits;
+        if(ratio >= safeExtraRatio) {
+            safeExtraArea = j;
+            safeExtraRatio = ratio;
+        }
+        if(ratio <= dangerExtraRatio) {
+            dangerExtraArea = j;
+            dangerExtraRatio = ratio;
+        }
+    }
+
+    dispArea(0, safeKingdomArea, safeKingdomRatio, `wl-safest-kingdom-${4}`);
+    dispArea(0, dangerKingdomArea, dangerKingdomRatio, `wl-dangerousest-kingdom-${4}`);
+    dispArea(1, safeExtraArea, safeExtraRatio, `wl-safest-extra-${4}`);
+    dispArea(1, dangerExtraArea, dangerExtraRatio, `wl-dangerousest-extra-${4}`);
 
     //randoms
     document.getElementById(`wl-true-rand-${4}`).innerText = trueRandWins;

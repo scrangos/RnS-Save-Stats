@@ -247,11 +247,6 @@ button {
     height: 3rem;
 }
 
-.icon.small {
-    width: 2rem;
-    height: 2rem;
-}
-
 .rabbit-result {
     display: flex;
     flex-direction: row;
@@ -259,6 +254,12 @@ button {
     align-items: center;
 }
 
+.rabbit-result>img {
+    width: 2rem;
+    height: 2rem;
+}
+
 .rabbit-result>div {
     width: 5rem;
+    padding-left: -2rem;
 }
