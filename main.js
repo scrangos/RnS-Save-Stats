@@ -1340,7 +1340,7 @@ function handleSort(array, sortBy, sortItem, sortType) {
         
         if(!sortType && sortType != 0) {
             sortType = prevSortTypes[sortItem];
-            checkVar = "id";
+            checkVar = sortBy[sortType];
         }
         else if(sortType == prevSortTypes[sortItem]) {
             sortMult = -1;
@@ -1374,6 +1374,7 @@ function generateItems(sortType) {
     const SORTITEM = "items";
 
     handleSort(itemsArray, SORTBY, SORTITEM, sortType);
+    if(!sortType) sortType = prevSortTypes.items;
 
     let itemsElem = document.getElementById("item-grid");
     let itemsChildren = itemsElem.children;
@@ -1430,6 +1431,7 @@ function generateGems (sortType) {
     const SORTITEM = "gems";
 
     handleSort(gemsArray, SORTBY, SORTITEM, sortType);
+    if(!sortType) sortType = prevSortTypes.gems;
 
     let gemsElem = document.getElementById("gems-grid");
     let gemschildren = gemsElem.children;
