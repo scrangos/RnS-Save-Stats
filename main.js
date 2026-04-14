@@ -25,7 +25,7 @@ const TYPES = ["Offline", "Online"];
 const KINGDOMAREACODES = ["Outskirts", "Nest", "Arsenal", "Lighthouse", "Streets", "Lakeside", "Pinnacle"];
 const EXTRAAREACODES = ["Geode", "Depths", "Aurum", "Sanct", "Reflection"];
 const KINGDOMAREANAMES = ["Outskirts", "Nest", "Arsenal", "Darkhouse", "Churchmouse", "Lakeside", "Pale Keep"];
-const EXTRAAREANAMES = ["Geode", "Depths", "Aurum", "Sancum", "Hallway"];
+const EXTRAAREANAMES = ["Geode", "Depths", "Aurum", "Sanctum", "Hallway"];
 
 const wlLabels = [
     [
