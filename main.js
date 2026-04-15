@@ -273,6 +273,75 @@ function handleThemeChange() {
     }
 }
 
+function handleRabbitSelector() {
+    let compStat = document.getElementById("rabbits-selector").selectedIndex;
+    let compDiff = document.getElementById("rabbits-diff-selector").selectedIndex;
+    let compType = document.getElementById("rabbits-type-selector").selectedIndex;
+
+    let prev = document.getElementById("rabbits-graph");
+    if(prev) prev.remove();
+    
+    let string = "";
+
+    if(compType == 0) console.warn("unsupported combo");
+    if(compType == 1) string += "Offline";
+    else if(compType == 2) string += "Online";
+
+    if(compDiff < 4) string += DIFFS[compDiff];
+    else console.warn("unsupported combo");
+
+    if(compStat == 0) {
+        string += "Count";
+        createPieGraph(string, 1, false);
+    }
+    else if(compStat == 1) {
+        string += "Fastest";
+        createPieGraph(string, 0, true);
+    }
+
+    // make a new array of objects that contain rid and the final value
+    /*
+    FastestOfflineDiff: "2"
+    FastestOfflineTime: 1715114
+    FastestOnlineDiff: "1"
+    FastestOnlineTime: 1146018
+    FastestWinDiff: "1"
+    FastestWinTime: 1146018
+    FastestWinType: "1"
+    OfflineCuteCount: 0
+    OfflineCuteFastest: 0
+    OfflineHardCount: 5
+    OfflineHardFastest: 1715114
+    OfflineLunarCount: 0
+    OfflineLunarFastest: 0
+    OfflineNormalCount: 2
+    OfflineNormalFastest: 2083417
+    OfflineWins: 7
+    OnlineCuteCount: 0
+    OnlineCuteFastest: 0
+    OnlineHardCount: 7
+    OnlineHardFastest: 1897062
+    OnlineLunarCount: 2
+    OnlineLunarFastest: 2157213
+    OnlineNormalCount: 1
+    OnlineNormalFastest: 1146018
+    OnlineWins: 10
+    TotalWins: 17
+    */
+
+
+
+    // switch(compStat) {
+    //     case 0:
+    //         createPieGraph("TotalWins", 1);
+    //         break;
+    //     case 1:
+    //         createPieGraph("FastestWinTime", 1, 1);
+    //         break;
+
+    // }
+}
+
 function promptColor(index) {
     const elem = document.getElementById("theme-select");
     let prevColor = colorMain;
@@ -744,6 +813,8 @@ function generateRabbits() {
 
     // overview, with a pie graph of rabbits by win count
     // leaderboard/bar graph of fastest rabbits
+    console.log(rabbitStats[0]);
+    handleRabbitSelector();
 
     rabbitStats.sort((a, b) => {return a.id - b.id});
 
@@ -1587,4 +1658,46 @@ function parseOpacity(c) {
     else if(c.length == 9)
         val = parseInt(c.substring(7, 9), 16);
     return val;
+}
+
+function createPieGraph(field, sortDirection, convertToTime) {
+    const SIZE = 80;
+
+    let mult = sortDirection ? 1 : -1;
+    rabbitStats.sort((a, b) => {
+        return (a[field] - b[field]) * mult;
+    });
+
+    let svg = document.createElementNS('http://www.w3.org/2000/svg',"svg");
+    svg.id = "rabbits-graph";
+    svg.setAttribute("width", "200");
+    svg.setAttribute("height", "200");
+    svg.classList.add("pie");
+    let angle = 0;
+    let total = 0;
+    for(let i in rabbitStats) {
+        total += Number(rabbitStats[i][field]);
+    }
+    
+    for(let i in rabbitStats) {
+        let arcStartX = Math.cos(angle) * SIZE + SIZE;
+        let arcStartY = Math.sin(angle) * SIZE + SIZE;
+        angle += (rabbitStats[i][field] / total) * 2 * Math.PI;
+        let arcEndX = Math.cos(angle) * SIZE + SIZE;
+        let arcEndY = Math.sin(angle) * SIZE + SIZE;
+
+        let val = rabbitStats[i][field];
+        if(convertToTime == 1) val = msToString(val);
+
+        //todo: if more than 180 degrees, switch sweep mode
+        //special case: 360 degrees is just a circle
+
+        let path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.innerHTML = `<title>${RABBITS[rabbitStats[i].id].name}: ${val}</title>`;
+        let pathStr = `M${SIZE} ${SIZE} L${arcStartX} ${arcStartY} A${SIZE} ${SIZE}, 0, 0, 1, ${arcEndX} ${arcEndY} Z`;
+        path.setAttribute("d", pathStr);
+        path.style = `fill: ${RABBITS[rabbitStats[i].id].color}; stroke: #000`;
+        svg.appendChild(path);
+    }
+    document.getElementById("rabbits-top").appendChild(svg);
 }

@@ -195,7 +195,27 @@
             </div>
         </div>
         <div class="tab" id="tab-1">
-            <div id="rabbits-content"></div>
+            <div>
+                <div id="rabbits-top">
+                    <select onchange="handleRabbitSelector()" id="rabbits-selector" class="right">
+                        <option selected>Clear Count</option>
+                        <option>Fastest Run</option>
+                    </select>
+                    <select onchange="handleRabbitSelector()" id="rabbits-diff-selector" class="right">
+                        <option>Cute</option>
+                        <option>Normal</option>
+                        <option>Hard</option>
+                        <option>Lunar</option>
+                        <option selected>All Difficulties</option>
+                    </select>
+                    <select onchange="handleRabbitSelector()" id="rabbits-type-selector" class="right">
+                        <option selected>Combined</option>
+                        <option>Offline</option>
+                        <option>Online</option>
+                    </select>
+                </div>
+                <div id="rabbits-content"></div>
+            </div>
         </div>
         <div class="tab" id="tab-2">
             <div id="diffs-content">

@@ -263,3 +263,12 @@ button {
     width: 5rem;
     padding-left: -2rem;
 }
+
+.pie {
+    /* width: 100px;
+    height: 100px; */
+}
+
+#rabbits-top>.right {
+    display: block;
+}
