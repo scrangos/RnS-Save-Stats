@@ -737,7 +737,7 @@ function generateSummary() {
     // Fastest / most win records
 
     dispRabbit(fastestWins[0].id, 0, fastestWins[0].FastestOfflineTime, "fastest0-1");
-    dispRabbit(fastestWins[1].id, 0, fastestWins[0].FastestOnlineTime, "fastest0-2");
+    dispRabbit(fastestWins[1].id, 0, fastestWins[1].FastestOnlineTime, "fastest0-2");
     
     dispRabbit(mostWins[0].id, 1, mostWins[0].TotalWins, "winnest0-0");
     dispRabbit(mostWins[1].id, 1, mostWins[1].OfflineWins, "winnest0-1");
