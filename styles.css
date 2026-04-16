@@ -264,11 +264,33 @@ button {
     padding-left: -2rem;
 }
 
-.pie {
-    /* width: 100px;
-    height: 100px; */
+#rabbits-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
-#rabbits-top>.right {
-    display: block;
+#rabbits-table {
+    flex-grow: 2;
+}
+
+#rabbits-table-content {
+    display: flex;
+    flex-direction: row;
+}
+#rabbits-table-content>div {
+    text-align: center;
+    /* min-width: 12rem; */
+    width: 33%;
+}
+
+#rabbits-selectors>div {
+    text-align: right;
+    padding-bottom: 4px;
+}
+
+#rabbits-selectors>div>select {
+    width: 8rem;
+    color: var(--color-main);
+    background-color: var(--color-bg);
 }

@@ -195,26 +195,45 @@
             </div>
         </div>
         <div class="tab" id="tab-1">
-            <div>
+            <div id="rabbits-content">
+                <!-- <div id="rabbits-title" class="title">Class Stats</div> -->
                 <div id="rabbits-top">
-                    <select onchange="handleRabbitSelector()" id="rabbits-selector" class="right">
-                        <option selected>Clear Count</option>
-                        <option>Fastest Run</option>
-                    </select>
-                    <select onchange="handleRabbitSelector()" id="rabbits-diff-selector" class="right">
-                        <option>Cute</option>
-                        <option>Normal</option>
-                        <option>Hard</option>
-                        <option>Lunar</option>
-                        <option selected>All Difficulties</option>
-                    </select>
-                    <select onchange="handleRabbitSelector()" id="rabbits-type-selector" class="right">
-                        <option selected>Combined</option>
-                        <option>Offline</option>
-                        <option>Online</option>
-                    </select>
+                    <svg id="rabbits-graph" width="200" height="200"></svg>
+                    <div id="rabbits-table">
+                        <div id="rabbits-table-title" class="subtitle"></div>
+                        <div id="rabbits-table-subtitle" class="centered"></div>
+                        <br>
+                        <div id="rabbits-table-content"></div>
+                    </div>
+                    <div id="rabbits-selectors">
+                        <div>
+                            <label for="rabbits-category-selector">Category: </label>
+                            <select onchange="handleRabbitSelector()" id="rabbits-category-selector">
+                                <option selected>Clear Count</option>
+                                <option>Fastest Run</option>
+                            </select>
+                        </div>
+                        <div>
+                        <label for="rabbits-diff-selector">Difficulty: </label>
+                            <select onchange="handleRabbitSelector()" id="rabbits-diff-selector">
+                                <option>Cute</option>
+                                <option>Normal</option>
+                                <option>Hard</option>
+                                <option>Lunar</option>
+                                <option selected>All Difficulties</option>
+                            </select>
+                        </div>
+                        <div>
+                        <label for="rabbits-type-selector">Lobby: </label>
+                            <select onchange="handleRabbitSelector()" id="rabbits-type-selector">
+                                <option selected>Combined</option>
+                                <option>Offline</option>
+                                <option>Online</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div id="rabbits-content"></div>
+                <div id="rabbits-list"></div>
             </div>
         </div>
         <div class="tab" id="tab-2">

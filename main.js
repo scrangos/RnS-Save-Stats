@@ -274,72 +274,107 @@ function handleThemeChange() {
 }
 
 function handleRabbitSelector() {
-    let compStat = document.getElementById("rabbits-selector").selectedIndex;
+    let compStat = document.getElementById("rabbits-category-selector").selectedIndex;
     let compDiff = document.getElementById("rabbits-diff-selector").selectedIndex;
     let compType = document.getElementById("rabbits-type-selector").selectedIndex;
-
-    let prev = document.getElementById("rabbits-graph");
-    if(prev) prev.remove();
     
-    let string = "";
+    rabbitStats.sort((a, b) => {
+        return a.id - b.id;
+    });
 
-    if(compType == 0) console.warn("unsupported combo");
-    if(compType == 1) string += "Offline";
-    else if(compType == 2) string += "Online";
-
-    if(compDiff < 4) string += DIFFS[compDiff];
-    else console.warn("unsupported combo");
-
-    if(compStat == 0) {
-        string += "Count";
-        createPieGraph(string, 1, false);
+    if(compDiff == 4) {
+        // sum/fastest of all diffs
+        rabbitStats.sort((a, b) => {
+            let aVal = 0, bVal = 0;
+            for(let i in DIFFS) {
+                if(compType == 0 || compType == 1) { //offline
+                    if(compStat == 0) {
+                        aVal += a[`Offline${DIFFS[i]}Count`];
+                        bVal += b[`Offline${DIFFS[i]}Count`];
+                    }
+                    else if(compStat == 1) {
+                        aVal = getMinIfNotZero(aVal, a[`Offline${DIFFS[i]}Fastest`]);
+                        bVal = getMinIfNotZero(bVal, b[`Offline${DIFFS[i]}Fastest`]);
+                    }
+                }
+                if(compType == 0 || compType == 2) { //online
+                    if(compStat == 0) {
+                        aVal += a[`Online${DIFFS[i]}Count`];
+                        bVal += b[`Online${DIFFS[i]}Count`];
+                    }
+                    else if(compStat == 1) {
+                        aVal = getMinIfNotZero(aVal, a[`Online${DIFFS[i]}Fastest`]);
+                        bVal = getMinIfNotZero(bVal, b[`Online${DIFFS[i]}Fastest`]);
+                    }
+                }
+            }
+            a.GraphValue = aVal;
+            b.GraphValue = bVal;
+            return (aVal - bVal) * (compStat ? -1 : 1);
+            return (aVal - bVal);
+        });
     }
-    else if(compStat == 1) {
-        string += "Fastest";
-        createPieGraph(string, 0, true);
+    else {
+        rabbitStats.sort((a, b) => {
+            let aVal = 0, bVal = 0;
+            if(compType == 0 || compType == 1) { //offline
+                if(compStat == 0) {
+                    aVal += a[`Offline${DIFFS[compDiff]}Count`];
+                    bVal += b[`Offline${DIFFS[compDiff]}Count`];
+                }
+                else if(compStat == 1) {
+                    aVal = getMinIfNotZero(aVal, a[`Offline${DIFFS[compDiff]}Fastest`]);
+                    bVal = getMinIfNotZero(bVal, b[`Offline${DIFFS[compDiff]}Fastest`]);
+                }
+            }
+            if(compType == 0 || compType == 2) { //online
+                if(compStat == 0) {
+                    aVal += a[`Online${DIFFS[compDiff]}Count`];
+                    bVal += b[`Online${DIFFS[compDiff]}Count`];
+                }
+                else if(compStat == 1) {
+                    aVal = getMinIfNotZero(aVal, a[`Online${DIFFS[compDiff]}Fastest`]);
+                    bVal = getMinIfNotZero(bVal, b[`Online${DIFFS[compDiff]}Fastest`]);
+                }
+            }
+            a.GraphValue = aVal;
+            b.GraphValue = bVal;
+            return (aVal - bVal) * (compStat ? -1 : 1);
+            return (aVal - bVal);
+        });
     }
+    createPieGraph("GraphValue", 1, compStat);
 
-    // make a new array of objects that contain rid and the final value
-    /*
-    FastestOfflineDiff: "2"
-    FastestOfflineTime: 1715114
-    FastestOnlineDiff: "1"
-    FastestOnlineTime: 1146018
-    FastestWinDiff: "1"
-    FastestWinTime: 1146018
-    FastestWinType: "1"
-    OfflineCuteCount: 0
-    OfflineCuteFastest: 0
-    OfflineHardCount: 5
-    OfflineHardFastest: 1715114
-    OfflineLunarCount: 0
-    OfflineLunarFastest: 0
-    OfflineNormalCount: 2
-    OfflineNormalFastest: 2083417
-    OfflineWins: 7
-    OnlineCuteCount: 0
-    OnlineCuteFastest: 0
-    OnlineHardCount: 7
-    OnlineHardFastest: 1897062
-    OnlineLunarCount: 2
-    OnlineLunarFastest: 2157213
-    OnlineNormalCount: 1
-    OnlineNormalFastest: 1146018
-    OnlineWins: 10
-    TotalWins: 17
-    */
+    let titleString = "Top 3 ";
+    let subtitleString = "";
+    if(compStat) titleString += "Fastest Rabbits ";
+    else titleString += "Most Winning Rabbits ";
 
+    if(compDiff != 4) subtitleString += `(${DIFFS[compDiff]}`;
+    else subtitleString += "(All Difficulties";
 
+    if(compType == 0) subtitleString += ')';
+    if(compType == 1) subtitleString += ", Offline)";
+    if(compType == 2) subtitleString += ", Online)";
 
-    // switch(compStat) {
-    //     case 0:
-    //         createPieGraph("TotalWins", 1);
-    //         break;
-    //     case 1:
-    //         createPieGraph("FastestWinTime", 1, 1);
-    //         break;
+    document.getElementById("rabbits-table-title").innerText = titleString;
+    document.getElementById("rabbits-table-subtitle").innerText = subtitleString;
 
-    // }
+    let table = document.getElementById("rabbits-table-content");
+    while(table.hasChildNodes())
+        table.firstChild.remove();
+    let count = 0;
+    for(let i = rabbitStats.length - 1; i >= 0; i--) {
+        if(rabbitStats[i].GraphValue == 0 || rabbitStats[i].GraphValue == NEVER) continue;
+        let newEntry = document.createElement("div");
+        newEntry.id = `rabbits-table-${count}`;
+        table.appendChild(newEntry);
+
+        dispRabbit(rabbitStats[i].id, !compStat, rabbitStats[i].GraphValue, `rabbits-table-${count}`);
+
+        count++;
+        if(count > 2) break;
+    }
 }
 
 function promptColor(index) {
@@ -807,7 +842,7 @@ function generateSummary() {
 }
 
 function generateRabbits() {
-    let rabbitsElem = document.getElementById("rabbits-content");
+    let rabbitsElem = document.getElementById("rabbits-list");
     while(rabbitsElem.hasChildNodes())
         rabbitsElem.firstChild.remove();
 
@@ -1661,43 +1696,59 @@ function parseOpacity(c) {
 }
 
 function createPieGraph(field, sortDirection, convertToTime) {
-    const SIZE = 80;
+    // rabbitStats should already be sorted
+    const SIZE = Number(80);
 
-    let mult = sortDirection ? 1 : -1;
-    rabbitStats.sort((a, b) => {
-        return (a[field] - b[field]) * mult;
-    });
-
-    let svg = document.createElementNS('http://www.w3.org/2000/svg',"svg");
-    svg.id = "rabbits-graph";
-    svg.setAttribute("width", "200");
-    svg.setAttribute("height", "200");
+    let svg = document.getElementById("rabbits-graph");
+    // svg.id = "rabbits-graph";
+    // svg.setAttribute("width", "200");
+    // svg.setAttribute("height", "200");
     svg.classList.add("pie");
+    svg.innerHTML = "";
     let angle = 0;
     let total = 0;
     for(let i in rabbitStats) {
-        total += Number(rabbitStats[i][field]);
+        if(rabbitStats[i][field] != 0 && rabbitStats[i][field] != NEVER)
+            total += Number(rabbitStats[i][field]);
     }
     
     for(let i in rabbitStats) {
+        if(rabbitStats[i][field] == 0 || rabbitStats[i][field] == NEVER) continue;
         let arcStartX = Math.cos(angle) * SIZE + SIZE;
         let arcStartY = Math.sin(angle) * SIZE + SIZE;
-        angle += (rabbitStats[i][field] / total) * 2 * Math.PI;
+
+        let arcSpan = (rabbitStats[i][field] / total) * 2 * Math.PI;
+        angle += arcSpan
+
         let arcEndX = Math.cos(angle) * SIZE + SIZE;
         let arcEndY = Math.sin(angle) * SIZE + SIZE;
 
         let val = rabbitStats[i][field];
         if(convertToTime == 1) val = msToString(val);
 
-        //todo: if more than 180 degrees, switch sweep mode
-        //special case: 360 degrees is just a circle
+        //special case: 360 degrees
+        if(arcSpan >= Math.PI * 2 - 0.005) {
+            let circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.innerHTML = `<title>${RABBITS[rabbitStats[i].id].name}: ${val}</title>`;
+            circle.setAttribute("r", SIZE);
+            circle.setAttribute("cx", SIZE);
+            circle.setAttribute("cy", SIZE);
+            circle.setAttribute("fill", RABBITS[rabbitStats[i].id].color);
+            circle.setAttribute("stroke", "#000");
+            svg.appendChild(circle);
 
-        let path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.innerHTML = `<title>${RABBITS[rabbitStats[i].id].name}: ${val}</title>`;
-        let pathStr = `M${SIZE} ${SIZE} L${arcStartX} ${arcStartY} A${SIZE} ${SIZE}, 0, 0, 1, ${arcEndX} ${arcEndY} Z`;
-        path.setAttribute("d", pathStr);
-        path.style = `fill: ${RABBITS[rabbitStats[i].id].color}; stroke: #000`;
-        svg.appendChild(path);
+        }
+        else {
+            let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.innerHTML = `<title>${RABBITS[rabbitStats[i].id].name}: ${val}</title>`;
+
+            //special case: 180 degees or more
+            let largeFlag = arcSpan > Math.PI ? 1 : 0;
+
+            let pathStr = `M${SIZE} ${SIZE} L${arcStartX} ${arcStartY} A${SIZE} ${SIZE}, 0, ${largeFlag}, 1, ${arcEndX} ${arcEndY} Z`;
+            path.setAttribute("d", pathStr);
+            path.style = `fill: ${RABBITS[rabbitStats[i].id].color}; stroke: #000`;
+            svg.appendChild(path);
+        }
     }
-    document.getElementById("rabbits-top").appendChild(svg);
 }
