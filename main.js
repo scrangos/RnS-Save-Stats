@@ -97,23 +97,27 @@ const wlIds = [
 ];
 
 function init() {
-    currentTab = 0;
-    buildWLTables();
-    let c1 = localStorage.getItem("color-main");
-    if(!c1) c1 = colorMain;
-    let c2 = localStorage.getItem("color-bg");
-    if(!c2) c2 = colorBg;
-    setColors(c1, c2);
+    let savedTab = localStorage.getItem("tab");
+    if(!savedTab) savedTab = 0;
+    changeTab(savedTab);
 
-    let t = localStorage.getItem("theme");
-    if(!t && t != 0) {
+    let savedC1 = localStorage.getItem("color-main");
+    if(!savedC1) savedC1 = colorMain;
+    let savedC2 = localStorage.getItem("color-bg");
+    if(!savedC2) savedC2 = colorBg;
+    setColors(savedC1, savedC2);
+
+    let savedTheme = localStorage.getItem("theme");
+    if(!savedTheme && savedTheme != 0) {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-            t = 1;
-        else t = 0;
+            savedTheme = 1;
+        else savedTheme = 0;
     }
-    document.getElementById("theme-select").selectedIndex = t;
-    prevTheme = t;
+    document.getElementById("theme-select").selectedIndex = savedTheme;
+    prevTheme = savedTheme;
     handleThemeChange();
+
+    buildWLTables();
 
     // handle dragging files in
     window.addEventListener("drop", (e) => { //process drag&drop behavior
@@ -222,6 +226,7 @@ function changeTab (index) {
     document.getElementById(`tab-but-${currentTab}`).classList.remove("active");
     document.getElementById(`tab-but-${index}`).classList.add("active");
     currentTab = index;
+    localStorage.setItem("tab", index);
 }
 
 function handleUpload(file) {
