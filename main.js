@@ -263,9 +263,10 @@ function handleThemeChange() {
     const elem = document.getElementById("theme-select");
     if(elem.selectedIndex == 2)
         localStorage.setItem("theme", 3);
-    else
+    else if(elem.selectedIndex < 2)
         localStorage.setItem("theme", elem.selectedIndex);
-    prevTheme = elem.selectedIndex;
+    if(elem.selectedIndex < 3)
+        prevTheme = elem.selectedIndex;
     switch(elem.selectedIndex) {
         case 0:
             setColors("#222200", "#FFEFFF");
@@ -275,6 +276,12 @@ function handleThemeChange() {
             break;
         case 2:
             setColors();
+            break;
+        case 4:
+            promptColor(0);
+            break;
+        case 5:
+            promptColor(1);
     }
 }
 

@@ -26,13 +26,13 @@
     <span>You can find it at <code>C:\Users\USERNAME\AppData\Local\RabbitSteel\SaveFile\savedata.ini</code></span>
     <span id="theme">
         <label>Theme: </label>
-        <select id="theme-select">
+        <select id="theme-select" onchange="handleThemeChange()">
             <option onclick="handleThemeChange()" value="light">Moonlit</option>
             <option onclick="handleThemeChange()" value="dark">Spellbound</option>
             <option onclick="handleThemeChange()" value="random">Random!</option>
             <option style="display:none">Custom</option>
-            <option onclick="promptColor(0)" value="main color">&nbsp&nbspMain color</option>
-            <option onclick="promptColor(1)" value="bg color">&nbsp&nbspBG color</option>
+            <option value="main color">&nbsp&nbspMain color</option>
+            <option value="bg color">&nbsp&nbspBG color</option>
         </select>
     </span>
 
@@ -196,7 +196,6 @@
         </div>
         <div class="tab" id="tab-1">
             <div id="rabbits-content">
-                <!-- <div id="rabbits-title" class="title">Class Stats</div> -->
                 <div id="rabbits-top">
                     <svg id="rabbits-graph" width="200" height="200"></svg>
                     <div id="rabbits-table">
