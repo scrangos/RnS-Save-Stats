@@ -311,7 +311,6 @@ function handleRabbitSelector() {
             a.GraphValue = aVal;
             b.GraphValue = bVal;
             return (aVal - bVal) * (compStat ? -1 : 1);
-            return (aVal - bVal);
         });
     }
     else {
@@ -340,7 +339,6 @@ function handleRabbitSelector() {
             a.GraphValue = aVal;
             b.GraphValue = bVal;
             return (aVal - bVal) * (compStat ? -1 : 1);
-            return (aVal - bVal);
         });
     }
     createPieGraph("GraphValue", 1, compStat);
@@ -846,9 +844,6 @@ function generateRabbits() {
     while(rabbitsElem.hasChildNodes())
         rabbitsElem.firstChild.remove();
 
-    // overview, with a pie graph of rabbits by win count
-    // leaderboard/bar graph of fastest rabbits
-    console.log(rabbitStats[0]);
     handleRabbitSelector();
 
     rabbitStats.sort((a, b) => {return a.id - b.id});
@@ -1446,7 +1441,8 @@ function handleSort(array, sortBy, sortItem, sortType) {
         
         if(!sortType && sortType != 0) {
             sortType = prevSortTypes[sortItem];
-            checkVar = sortBy[sortType];
+            checkVar = sortBy[Math.abs(sortType)];
+            sortMult = prevSortTypes[sortItem];
         }
         else if(sortType == prevSortTypes[sortItem]) {
             sortMult = -1;
