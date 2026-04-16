@@ -293,4 +293,6 @@ button {
     width: 8rem;
     color: var(--color-main);
     background-color: var(--color-bg);
+    border: 1px solid var(--color-main);
+    border-radius: 2px;
 }
