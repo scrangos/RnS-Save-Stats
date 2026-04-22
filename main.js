@@ -565,6 +565,7 @@ function processItems() {
             let hard = (vals["ItemDiscovery"][GEMS[i].key] & 16) > 0;
             let lunar = (vals["ItemDiscovery"][GEMS[i].key] & 32) > 0;
             let any = (vals["ItemDiscovery"][GEMS[i].key] & 60) > 0;
+            if(!any){
             gemsArray.push({
                 key: GEMS[i].key,
                 type: GEMS[i].type,
@@ -578,7 +579,7 @@ function processItems() {
                 hard: hard,
                 lunar: lunar,
                 any: any
-            });
+            });}
             if(seen && GEMS[i].type > 0) gemTotals[0]++;
             if(held && GEMS[i].type > 0) gemTotals[1]++;
             if(cute) gemTotals[2]++;
